@@ -3,54 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Trị - In Ấn Sắc Màu</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; padding: 20px; }
-        .admin-container { max-width: 600px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin: 0 auto; }
-        h2 { color: #2D5A27; text-align: center; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #d35400; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #e67e22; }
-    </style>
+    <title>Hệ Thống Quản Trị - In Ấn Sắc Màu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
 
-    <div class="admin-container">
-        <h2>Đăng Sản Phẩm Mới</h2>
-        <div id="status-message" style="color: green; font-weight: bold; text-align: center; margin-bottom: 15px;"></div>
+    <aside>
+        <h2>SẮC MÀU <span>CMS</span></h2>
+        <ul class="nav-menu">
+            <li class="nav-item active" onclick="switchTab('tab-products', this)">Sản Phẩm</li>
+            <li class="nav-item" onclick="switchTab('tab-posts', this)">Bài Viết (Blog)</li>
+            <li class="nav-item" onclick="switchTab('tab-intro', this)">Sửa Giới Thiệu</li>
+            <li class="nav-item" onclick="switchTab('tab-contact', this)">Thông Tin Liên Hệ</li>
+        </ul>
+        <div style="margin-top: auto; font-size: 11px; color: #475569; text-align: center;">Chế độ bảo mật Admin</div>
+    </aside>
+
+    <main>
         
-        <form id="productForm">
-            <div class="form-group">
-                <label>Tên Sản Phẩm (VD: In Bạt Hiflex)</label>
-                <input type="text" id="prodName" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Giá tham khảo (VNĐ)</label>
-                <input type="number" id="prodPrice" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Mô tả chi tiết</label>
-                <textarea id="prodDesc" rows="4" required></textarea>
-            </div>
+        <div id="tab-products" class="panel active">
+            <h3>Đăng Sản Phẩm Cao Cấp</h3>
+            <form id="productForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tên sản phẩm</label>
+                        <input type="text" id="prodName" placeholder="Ví dụ: Bìa Folder Tên Doanh Nghiệp" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mã ID tùy chỉnh (Slug viết liền không dấu - KO TRÙNG)</label>
+                        <input type="text" id="prodSlug" placeholder="Ví dụ: bia-folder-a5" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Giá hiển thị cơ bản (VNĐ)</label>
+                        <input type="number" id="prodPrice" placeholder="Ví dụ: 15000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ảnh đại diện sản phẩm</label>
+                        <input type="file" id="prodImage" accept="image/*" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Mô tả tóm tắt ngắn</label>
+                        <textarea id="prodDesc" rows="2" placeholder="Hiển thị ở lưới sản phẩm ngoài trang chủ..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Thông số kỹ thuật (Kích thước, Chất liệu...)</label>
+                        <div id="specs-container">
+                            <div class="dynamic-row">
+                                <input type="text" class="spec-key" placeholder="Tên (VD: Chất liệu)">
+                                <input type="text" class="spec-val" placeholder="Giá trị (VD: Giấy C300)">
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add" onclick="addSpecRow()">+ Thêm Dòng Thông Số</button>
+                    </div>
 
-            <div class="form-group">
-                <label>Ảnh Sản Phẩm</label>
-                <input type="file" id="prodImage" accept="image/*" required>
-            </div>
+                    <div class="form-group">
+                        <label>Bảng phân loại giá theo số lượng</label>
+                        <div id="tiers-container">
+                            <div class="dynamic-row">
+                                <input type="text" class="tier-label" placeholder="Gói (VD: In 200 cái)">
+                                <input type="number" class="tier-price" placeholder="Giá tiền lẻ từng cái">
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add" onclick="addTierRow()">+ Thêm Gói Giá</button>
+                    </div>
 
-            <button type="button" onclick="submitProduct()" id="submitBtn">LƯU SẢN PHẨM</button>
-        </form>
-    </div>
+                    <div class="form-group full-width">
+                        <label>Bài viết thuyết minh chi tiết sản phẩm (Hỗ trợ nhập mã HTML)</label>
+                        <textarea id="prodContent" rows="8" placeholder="Viết bài phân tích chi tiết vật liệu, ưu nhược điểm, hướng dẫn đặt hàng..."></textarea>
+                    </div>
+                </div>
+                <button type="button" class="btn-submit" id="submitBtn" onclick="processSubmitProduct()">Lưu và phát hành sản phẩm</button>
+            </form>
+        </div>
+
+        <div id="tab-posts" class="panel">
+            <h3>Đăng Bài Viết Kiến Thức & Thiết Kế</h3>
+            <p style="color: #94a3b8;">Hệ thống form đăng bài đang kết nối đồng bộ sẵn sàng...</p>
+        </div>
+
+        <div id="tab-intro" class="panel"><h3>Quản lý trang Giới Thiệu</h3></div>
+        <div id="tab-contact" class="panel"><h3>Quản lý trang Liên Hệ</h3></div>
+
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <script src="js/api.js"></script>
-    
     <script src="js/admin.js"></script>
 
 </body>
-</html> 
+</html>
