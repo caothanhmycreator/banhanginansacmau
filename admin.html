@@ -1,0 +1,29 @@
+<div class="admin-dashboard">
+    <aside class="sidebar">
+        <h3>QUẢN TRỊ SẮC MÀU</h3>
+        <ul>
+            <li onclick="showTab('products')">Sản phẩm</li>
+            <li onclick="showTab('menu')">Cấu hình Menu</li>
+            <li onclick="showTab('banners')">Quản lý Banner</li>
+        </ul>
+    </aside>
+    
+    <main class="content">
+        <section id="tab-products">
+            <h2>Đăng Sản Phẩm Mới</h2>
+            <form id="product-form">
+                <input type="text" placeholder="Tên sản phẩm (VD: In Bạt Hiflex)">
+                <input type="number" placeholder="Giá cơ bản">
+                <textarea placeholder="Mô tả vật liệu & quy cách"></textarea>
+                <button type="button" onclick="handleSaveProduct()">LƯU SẢN PHẨM</button>
+            </form>
+        </section>
+
+        <section id="tab-menu" style="display:none;">
+            <h2>Sửa Menu Chính</h2>
+            <p>Sếp chỉ cần sửa tên hoặc link dưới đây, web sẽ tự cập nhật.</p>
+            <textarea id="menu-json" style="width:100%; height:300px; font-family:monospace;"></textarea>
+            <button onclick="handleSaveMenu()">CẬP NHẬT MENU</button>
+        </section>
+    </main>
+</div>
