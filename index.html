@@ -5,182 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>In Ấn Sắc Màu - Đặt In Trực Tuyến</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            /* Tông Xanh lá sẫm & Cam đặc trưng ngành in */
-            --bg-dark: #003417;
-            --bg-mid: #003e19;
-            --primary: #104925;
-            --accent: #E65100;
-            --accent-glow: #FF6D00;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            
-            /* Hiệu ứng kính bóng bẩy (Glossy) */
-            --glossy-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.4) 100%);
-            --glossy-border-top: rgba(255, 255, 255, 0.15);
-            --glossy-border-left: rgba(255, 255, 255, 0.05);
-        }
-
-        * { box-sizing: border-box; scroll-behavior: smooth; }
-
-        body {
-            margin: 0; padding: 0;
-            background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(circle at 0% 0%, var(--bg-mid) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, var(--primary) 0%, transparent 50%);
-            color: var(--text-main);
-            font-family: 'Montserrat', sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* --- FIXED NAVIGATION --- */
-        nav {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 5%;
-            background: rgba(4, 18, 10, 0.85);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--primary);
-            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
-        }
-        .logo { font-size: 24px; font-weight: 900; letter-spacing: 1px; color: #fff; }
-        .logo span { color: var(--accent-glow); }
-        .menu { display: flex; gap: 30px; }
-        .menu a {
-            color: var(--text-main); text-decoration: none; font-size: 14px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;
-        }
-        .menu a:hover { color: var(--accent-glow); }
-
-        /* --- LAYOUT CONFIG --- */
-        section { width: 100%; padding: 120px 8% 80px; }
-        .section-title { text-align: center; margin-bottom: 50px; }
-        .section-title h2 { font-size: 38px; font-weight: 900; text-transform: uppercase; margin: 0; }
-        .section-title h2 span { color: var(--accent-glow); }
-        .section-title p { color: var(--text-muted); font-size: 16px; margin-top: 10px; font-weight: 500; }
-
-        /* --- GLOSSY CARD COMPONENT --- */
-        .glossy-card {
-            background: var(--glossy-bg);
-            border-top: 1px solid var(--glossy-border-top);
-            border-left: 1px solid var(--glossy-border-left);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        }
-        /* Tạo vệt sáng phản chiếu ánh kính */
-        .glossy-card::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-25deg); transition: 0.5s; pointer-events: none;
-        }
-        .glossy-card:hover::before { left: 150%; }
-        .glossy-card:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 15px 40px rgba(230, 81, 0, 0.15); 
-            border-top: 1px solid var(--accent-glow);
-        }
-
-        /* --- HERO BANNER --- */
-        .hero { min-height: 100vh; display: flex; align-items: center; justify-content: space-between; gap: 40px; }
-        .hero-text { flex: 1; max-width: 600px; }
-        .hero-text .badge { 
-            color: #000; background: var(--accent-glow); font-weight: 800; letter-spacing: 2px; 
-            text-transform: uppercase; font-size: 13px; padding: 6px 12px; border-radius: 4px; margin-bottom: 20px; display: inline-block;
-        }
-        .hero-text h1 { font-size: 56px; font-weight: 900; margin: 0 0 20px; line-height: 1.2; color: #fff; }
-        .hero-text p { font-size: 17px; line-height: 1.6; color: var(--text-muted); margin-bottom: 40px; }
-        
-        .btn-cta {
-            display: inline-block; padding: 16px 45px;
-            background: var(--accent); color: #fff; text-decoration: none; font-weight: 800; font-size: 16px;
-            border-radius: 8px; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(230, 81, 0, 0.4); transition: 0.2s;
-            border: 1px solid var(--accent-glow);
-        }
-        .btn-cta:hover { background: var(--accent-glow); box-shadow: 0 6px 20px rgba(230, 81, 0, 0.6); }
-
-        .hero-visual { flex: 1; display: flex; justify-content: center; }
-        .hero-box { width: 400px; height: 400px; padding: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
-        .hero-box h2 { font-size: 48px; color: #fff; margin: 0; font-weight: 900; letter-spacing: 2px;}
-        .hero-box h2 span { color: var(--accent-glow); }
-        .hero-box p { color: var(--text-muted); font-size: 18px; font-weight: 600;}
-
-        /* --- STATS --- */
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
-        .stat-card { padding: 30px 20px; text-align: center; border-radius: 12px; }
-        .stat-card h3 { font-size: 46px; font-weight: 900; color: var(--accent-glow); margin: 0 0 5px; }
-        .stat-card p { font-size: 15px; color: var(--text-main); margin: 0; font-weight: 700; letter-spacing: 1px;}
-
-        /* --- PRODUCTS GRID --- */
-        /* Chuyển thành lưới 3 cột để thẻ rộng hơn, đủ không gian cho chữ dài */
-        .products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-        
-        .product-card { padding: 30px; display: flex; flex-direction: column; height: 100%; }
-        .prod-img-box {
-            width: 100%; height: 200px; background: rgba(0,0,0,0.3); border-radius: 8px;
-            display: flex; align-items: center; justify-content: center; font-weight: 800;
-            color: var(--text-muted); border: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 25px; font-size: 16px; letter-spacing: 2px;
-        }
-        .product-card h4 { font-size: 22px; font-weight: 800; margin: 0 0 15px; color: #fff; line-height: 1.3;}
-        .product-card p { 
-            font-size: 15px; color: var(--text-muted); margin: 0 0 25px; 
-            line-height: 1.7; text-align: justify; flex-grow: 1; /* Đẩy giá tiền xuống đáy */
-        }
-        .prod-price { 
-            font-size: 20px; font-weight: 900; color: var(--accent-glow); 
-            padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: block;
-        }
-
-        /* --- BLOG --- */
-        .blog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
-        .blog-item-card { padding: 40px; display: flex; flex-direction: column; justify-content: space-between; }
-        .blog-meta { font-size: 13px; color: var(--accent-glow); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
-        .blog-item-card h3 { font-size: 24px; font-weight: 800; margin: 15px 0; color: #fff; line-height: 1.4; }
-        .blog-item-card p { font-size: 15px; color: var(--text-muted); line-height: 1.7; margin: 0 0 30px; text-align: justify; }
-        .read-more { color: var(--accent-glow); text-decoration: none; font-size: 14px; font-weight: 800; display: inline-block; text-transform: uppercase;}
-        .read-more:hover { color: #fff; }
-
-        /* --- FOOTER --- */
-        footer { background: #020805; border-top: 2px solid var(--primary); padding: 70px 8% 30px; }
-        .footer-content { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
-        .footer-about h3 { font-size: 24px; font-weight: 900; margin: 0 0 20px; }
-        .footer-about h3 span { color: var(--accent-glow); }
-        .footer-about p { color: var(--text-muted); font-size: 15px; line-height: 1.8; margin: 0; max-width: 450px; }
-        .footer-links h4 { font-size: 16px; font-weight: 800; text-transform: uppercase; color: #fff; margin: 0 0 25px; letter-spacing: 1px;}
-        .footer-links ul { list-style: none; padding: 0; margin: 0; }
-        .footer-links li { margin-bottom: 15px; }
-        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 15px; font-weight: 500; transition: 0.2s; }
-        .footer-links a:hover { color: var(--accent-glow); }
-        .copyright { text-align: center; font-size: 13px; color: #4a5568; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px; font-weight: 500;}
-
-        @media (max-width: 1024px) {
-            .products-grid { grid-template-columns: repeat(2, 1fr); }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .hero { flex-direction: column; text-align: center; padding-top: 160px; }
-            .blog-grid, .footer-content { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 768px) {
-            .products-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/home.css">
 </head>
 <body>
 
-    <nav>
-        <div class="logo">SẮC MÀU<span>.</span></div>
-        <div class="menu">
-            <a href="#hero">Trang Chủ</a>
-            <a href="#products">Sản Phẩm</a>
-            <a href="#blog">Kiến Thức</a>
-            <a href="#footer">Liên Hệ</a>
-        </div>
-    </nav>
+    <header id="dynamic-header"></header>
 
     <section class="hero" id="hero">
         <div class="hero-text">
@@ -225,11 +56,10 @@
         </div>
         
         <div class="products-grid">
-            
             <div class="glossy-card product-card">
                 <div class="prod-img-box">[ ẢNH BÌA FOLDER ]</div>
                 <h4>Bìa folder A5 - 200 cái - In offset</h4>
-                <p>Bìa folder không chỉ đơn thuần là công cụ lưu trữ tài liệu, mà còn là 'bộ mặt' đại diện cho phong cách làm việc chuyên nghiệp của doanh nghiệp bạn. Với thiết kế tinh tế, chất liệu giấy cao cấp cùng kỹ thuật in ấn sắc nét, các mẫu bìa folder của chúng tôi giúp nâng tầm hình ảnh thương hiệu trong mắt đối tác và khách hàng ngay từ cái nhìn đầu tiên. Hãy để những tài liệu quan trọng của bạn được nâng niu và bảo vệ trong một không gian chỉn chu, đẳng cấp nhất.</p>
+                <p>Bìa folder không chỉ đơn thuần là công cụ lưu trữ tài liệu, mà còn là 'bộ mặt' đại diện cho phong cách làm việc chuyên nghiệp của doanh nghiệp bạn. Với thiết kế tinh tế, chất liệu giấy cao cấp cùng kỹ thuật in ấn sắc nét, các mẫu bìa folder của chúng tôi giúp nâng tầm hình ảnh thương hiệu trong mắt đối tác và khách hàng ngay từ cái nhìn đầu tiên.</p>
                 <span class="prod-price">15.000 đ / cái</span>
             </div>
 
@@ -243,87 +73,14 @@
             <div class="glossy-card product-card">
                 <div class="prod-img-box">[ TEM DECAL ]</div>
                 <h4>Decal Tem Nhãn Ép Kim</h4>
-                <p>In decal bế chính xác theo mọi hình dáng bằng máy bế cao cấp. Hỗ trợ decal giấy, decal nhựa trong, decal sữa. Kết hợp kỹ thuật ép kim logo và cán màng bóng/mờ giúp tem nhãn sang trọng, chống nước và bảo vệ lớp mực tuyệt đối.</p>
+                <p>In decal bế chính xác theo mọi hình dáng bằng máy bế cao cấp. Hỗ trợ decal giấy, decal nhựa trong, decal sữa. Kết hợp kỹ thuật ép kim logo và cán màng bóng/mờ giúp tem nhãn sang trọng, chống nước tốt.</p>
                 <span class="prod-price">Từ 120.000 đ / mét</span>
             </div>
-            
-            <div class="glossy-card product-card">
-                <div class="prod-img-box">[ NAME CARD ]</div>
-                <h4>Danh Thiếp Doanh Nhân VIP</h4>
-                <p>Được in trên các dòng giấy mỹ thuật cao cấp (giấy gân, giấy ánh kim) với định lượng dày dặn. Hỗ trợ các kỹ thuật gia công sau in như bo góc tròn, dập nổi logo, ép nhũ vàng/bạc để thể hiện đẳng cấp và dấu ấn cá nhân của chủ doanh nghiệp.</p>
-                <span class="prod-price">Từ 90.000 đ / hộp</span>
-            </div>
-
-            <div class="glossy-card product-card">
-                <div class="prod-img-box">[ TỜ RƠI ]</div>
-                <h4>Tờ Rơi / Tờ Gấp Khuyến Mãi</h4>
-                <p>Giải pháp tiếp thị chi phí thấp với tốc độ phủ sóng cao. In offset số lượng lớn siêu nét trên giấy Couche bóng bẩy. Hỗ trợ cấn đường gấp đôi, gấp ba chuẩn xác, giúp chiến dịch khai trương hoặc giảm giá của cửa hàng đạt hiệu quả tối đa.</p>
-                <span class="prod-price">Từ 850 đ / tờ</span>
-            </div>
-
-            <div class="glossy-card product-card">
-                <div class="prod-img-box">[ THẺ NHỰA ]</div>
-                <h4>Thẻ Nhựa / Thẻ VIP Cứng</h4>
-                <p>In thẻ nhựa PVC 4 lớp cứng cáp như thẻ ATM. Tích hợp mã vạch, mã QR hoặc dập nổi tên khách hàng. Rất phù hợp để làm thẻ thành viên VIP, thẻ nhân viên, thẻ bảo hành với độ bền lên đến hàng chục năm không hư hỏng.</p>
-                <span class="prod-price">Từ 8.000 đ / thẻ</span>
-            </div>
         </div>
     </section>
 
-    <section id="blog">
-        <div class="section-title">
-            <h2>Kiến Thức <span>Ngành In</span></h2>
-            <p>Chuẩn bị file thiết kế đúng kỹ thuật giúp bản in hoàn hảo</p>
-        </div>
+    <footer id="dynamic-footer"></footer>
 
-        <div class="blog-grid">
-            <div class="glossy-card blog-item-card">
-                <div>
-                    <span class="blog-meta">Hệ Màu Kỹ Thuật</span>
-                    <h3>Tại sao phải chuyển file về hệ màu CMYK trước khi in?</h3>
-                    <p>Màn hình máy tính hiển thị bằng ánh sáng RGB (Đỏ - Lục - Lam), nhưng máy in lại phun mực theo cơ chế CMYK (Xanh lơ - Hồng sẫm - Vàng - Đen). Việc không ép hệ màu trước khi in sẽ làm sai lệch màu sắc thực tế lên tới 30%, đặc biệt là các màu xanh dương và cam...</p>
-                </div>
-                <a href="#" class="read-more">Xem chi tiết ➔</a>
-            </div>
-            
-            <div class="glossy-card blog-item-card">
-                <div>
-                    <span class="blog-meta">Kinh Nghiệm Thiết Kế</span>
-                    <h3>Cách xuất file PDF in ấn độ phân giải cao không bị nhòe vỡ</h3>
-                    <p>Để biển bạt quảng cáo hay tờ rơi đạt độ sắc nét căng tối đa, thợ thiết kế bắt buộc phải thiết lập mật độ điểm ảnh đạt tối thiểu 300dpi. Đồng thời, toàn bộ font chữ phải được "Create Outlines" (vector hóa) để tránh lỗi nhảy font khi mang qua máy in xưởng...</p>
-                </div>
-                <a href="#" class="read-more">Xem chi tiết ➔</a>
-            </div>
-        </div>
-    </section>
-
-    <footer id="footer">
-        <div class="footer-content">
-            <div class="footer-about">
-                <h3>IN ẤN SẮC MÀU<span>.</span></h3>
-                <p>Xưởng in ấn và thiết kế quảng cáo chuyên nghiệp tại TP. Cao Lãnh, Đồng Tháp. Đồng hành định hình và củng cố sức mạnh thương hiệu cho hàng nghìn doanh nghiệp khu vực miền Tây từ năm 2017.</p>
-            </div>
-            <div class="footer-links">
-                <h4>Dịch Vụ Nổi Bật</h4>
-                <ul>
-                    <li><a href="#products">In biển hiệu quảng cáo tấm lớn</a></li>
-                    <li><a href="#products">In decal tem nhãn bế theo mẫu</a></li>
-                    <li><a href="#products">In ấn phẩm văn phòng (Namecard, Folder)</a></li>
-                </ul>
-            </div>
-            <div class="footer-links">
-                <h4>Liên Hệ Đặt Hàng</h4>
-                <ul>
-                    <li><a href="#">Trụ sở: Nguyễn Văn Cừ, P.4, TP. Cao Lãnh</a></li>
-                    <li><a href="#">Kinh doanh 1: 0337.663.113 (Mrs Ly)</a></li>
-                    <li><a href="#">Kinh doanh 2: 0399.221.753 (Mrs Ngọc)</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright">
-            &copy; 2026 Hộ Kinh Doanh Sắc Màu Đồng Tháp. All rights reserved.
-        </div>
-    </footer>
-
+    <script src="js/components.js"></script>
 </body>
 </html>

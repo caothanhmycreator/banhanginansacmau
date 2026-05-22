@@ -54,5 +54,19 @@ const API = {
             .getPublicUrl(filePath);
             
         return data.publicUrl;
+    },
+    // Lấy chi tiết 1 sản phẩm dựa vào ID
+    async getProductById(id) {
+        const { data, error } = await supabaseClient
+            .from('products')
+            .select('*')
+            .eq('id', id)
+            .single(); // Lệnh single() đảm bảo chỉ lấy đúng 1 dòng
+            
+        if (error) {
+            console.error('Lỗi lấy sản phẩm:', error);
+            return null;
+        }
+        return data;
     }
 };
