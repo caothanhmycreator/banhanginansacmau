@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In Ấn Sắc Màu - 3D Cube Transitions</title>
+    <style>
+        :root {
+            --primary-dark: #0a1f12; 
+            --primary: #173320;      
+            --accent: #d35400;       
+            --accent-glow: #e67e22;  
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-light: #e2e8f0;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background: var(--primary-dark);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        /* Đèn nền tĩnh tạo mảng màu */
+        .ambient-light { position: absolute; border-radius: 50%; filter: blur(100px); z-index: 0; }
+        .light-1 { width: 50vw; height: 50vh; background: rgba(211, 84, 0, 0.15); top: -10%; right: -10%; }
+        .light-2 { width: 60vw; height: 60vh; background: rgba(45, 90, 39, 0.3); bottom: -20%; left: -10%; }
+
+        /* THANH ĐIỀU HƯỚNG CỐ ĐỊNH NHƯNG NẰM TRÊN CÙNG LỚP 3D */
+        nav {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 2000;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 50px; box-sizing: border-box;
+            background: rgba(10, 31, 18, 0.6);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .logo { font-size: 24px; font-weight: 900; letter-spacing: 2px; color: #fff; cursor: pointer; }
+        .logo span { color: var(--accent-glow); }
+        .menu-items { display: flex; gap: 30px; }
+        .nav-btn {
+            background: none; border: none; color: #a0aec0; font-size: 14px; font-weight: 700;
+            text-transform: uppercase; cursor: pointer; transition: 0.3s; padding: 5px 10px;
+        }
+        .nav-btn:hover, .nav-btn.active { color: var(--accent-glow); }
+
+        /* HỆ THỐNG SÂN KHẤU 3D CHỨA CÁC TRANG */
+        .perspective-stage {
+            position: relative;
+            width: 100%; height: 100%;
+            perspective: 2000px; /* Góc nhìn siêu sâu */
+            transform-style: preserve-3d;
+        }
+
+        /* CẤU TRÚC MỖI TRANG */
+        .page {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            visibility: hidden; 
+            overflow: hidden;
+            backface-visibility: hidden; /* Quan trọng: giấu mặt sau khi xoay */
+            transform: translate3d(0, 0, 0);
+            display: flex; align-items: center; justify-content: center;
+            padding-top: 80px; 
+            box-sizing: border-box;
+            /* Đổ bóng ảo cho trang để tạo khối hộp */
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+        }
+
+        .page.active { visibility: visible; z-index: 1; }
+
+        /* NỘI DUNG BÊN TRONG TRANG */
+        .content-wrapper {
+            display: flex; width: 80%; max-width: 1200px; justify-content: space-between; align-items: center; gap: 50px;
+        }
+        
+        .text-box { flex: 1; }
+        .text-box h1 { font-size: 48px; margin: 0 0 15px; color: #fff; line-height: 1.2; }
+        .text-box p { font-size: 16px; color: #a0aec0; line-height: 1.6; margin-bottom: 30px; }
+        
+        .action-btn {
+            padding: 12px 30px; background: var(--accent); color: #fff; font-weight: bold; border: none;
+            border-radius: 25px; cursor: pointer; box-shadow: 0 10px 25px rgba(211, 84, 0, 0.4); transition: 0.3s;
+        }
+        .action-btn:hover { background: var(--accent-glow); transform: translateY(-3px); }
+
+        /* KHỐI KÍNH 3D NỔI BẬT */
+        .glass-showcase {
+            width: 400px; height: 400px;
+            background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
+            border-radius: 30px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            animation: float 6s ease-in-out infinite alternate;
+            position: relative;
+        }
+        .glass-showcase h2 { color: var(--accent-glow); font-size: 32px; text-transform: uppercase; }
+
+        /* ========================================================
+           ANIMATIONS: LẬT KHỐI LẬP PHƯƠNG 3D (CUBE TRANSITIONS)
+           ======================================================== */
+           
+        /* Chuyển tới: Trang cũ lùi và xoay sang trái */
+        .pt-page-rotateCubeLeftOut {
+            transform-origin: 100% 50%; /* Trục xoay ở mép phải */
+            animation: rotateCubeLeftOut 0.8s cubic-bezier(0.25, 1, 0.5, 1) both;
+        }
+        /* Chuyển tới: Trang mới từ bên phải xoay đập vào */
+        .pt-page-rotateCubeLeftIn {
+            transform-origin: 0% 50%; /* Trục xoay ở mép trái */
+            animation: rotateCubeLeftIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) both;
+        }
+
+        /* Chuyển lui: Trang cũ lùi và xoay sang phải */
+        .pt-page-rotateCubeRightOut {
+            transform-origin: 0% 50%; /* Trục xoay ở mép trái */
+            animation: rotateCubeRightOut 0.8s cubic-bezier(0.25, 1, 0.5, 1) both;
+        }
+        /* Chuyển lui: Trang mới từ bên trái xoay đập vào */
+        .pt-page-rotateCubeRightIn {
+            transform-origin: 100% 50%; /* Trục xoay ở mép phải */
+            animation: rotateCubeRightIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) both;
+        }
+
+        /* KHAI BÁO KEYFRAMES 3D CUBE */
+        @keyframes rotateCubeLeftOut {
+            0% { opacity: 1; }
+            50% { animation-timing-function: ease-out; transform: translateX(-50%) translateZ(-200px) rotateY(-45deg); opacity: 0.5; }
+            100% { opacity: 0.3; transform: translateX(-100%) rotateY(-90deg); visibility: hidden; }
+        }
+
+        @keyframes rotateCubeLeftIn {
+            0% { opacity: 0.3; transform: translateX(100%) rotateY(90deg); }
+            50% { animation-timing-function: ease-out; transform: translateX(50%) translateZ(-200px) rotateY(45deg); opacity: 0.5; }
+            100% { opacity: 1; transform: translateX(0) translateZ(0) rotateY(0deg); visibility: visible; }
+        }
+
+        @keyframes rotateCubeRightOut {
+            0% { opacity: 1; }
+            50% { animation-timing-function: ease-out; transform: translateX(50%) translateZ(-200px) rotateY(45deg); opacity: 0.5; }
+            100% { opacity: 0.3; transform: translateX(100%) rotateY(90deg); visibility: hidden; }
+        }
+
+        @keyframes rotateCubeRightIn {
+            0% { opacity: 0.3; transform: translateX(-100%) rotateY(-90deg); }
+            50% { animation-timing-function: ease-out; transform: translateX(-50%) translateZ(-200px) rotateY(-45deg); opacity: 0.5; }
+            100% { opacity: 1; transform: translateX(0) translateZ(0) rotateY(0deg); visibility: visible; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-20px); }
+        }
+
+        /* Màu riêng để test phân biệt các mặt của khối lập phương */
+        #page-1 { background: radial-gradient(circle at center, #173320 0%, #0a1f12 100%); }
+        #page-2 { background: radial-gradient(circle at center, #1a2a6c 0%, #0a0f1d 100%); }
+        #page-3 { background: radial-gradient(circle at center, #4b134f 0%, #1a081c 100%); }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">SẮC MÀU <span>.</span></div>
+        <div class="menu-items">
+            <button class="nav-btn active" data-target="1">Trang Chủ</button>
+            <button class="nav-btn" data-target="2">Sản Phẩm</button>
+            <button class="nav-btn" data-target="3">Báo Giá</button>
+        </div>
+    </nav>
+
+    <div class="perspective-stage">
+        
+        <div class="page page-1 active" id="page-1">
+            <div class="ambient-light light-1"></div>
+            <div class="ambient-light light-2"></div>
+            <div class="content-wrapper">
+                <div class="text-box">
+                    <span style="color: var(--accent-glow); font-weight: bold; letter-spacing: 2px;">IN ẤN CHUYÊN NGHIỆP</span>
+                    <h1>Giải Pháp In Ấn<br>Toàn Diện</h1>
+                    <p>Khám phá công nghệ in ấn hiện đại nhất Đồng Tháp. Trải nghiệm không gian xoay 3D chân thực như lật từng trang hồ sơ.</p>
+                    <button class="action-btn">Khám Phá Ngay</button>
+                </div>
+                <div class="glass-showcase">
+                    <h2>MẶT TRƯỚC</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="page page-2" id="page-2">
+            <div class="ambient-light light-1" style="background: rgba(72, 202, 228, 0.2);"></div>
+            <div class="content-wrapper">
+                <div class="glass-showcase" style="border-radius: 10px; border-color: var(--accent);">
+                    <h2 style="color: white;">MẶT PHẢI</h2>
+                </div>
+                <div class="text-box" style="text-align: right;">
+                    <span style="color: #48cae4; font-weight: bold; letter-spacing: 2px;">DỊCH VỤ ĐA DẠNG</span>
+                    <h1>Kho Sản Phẩm<br>Vượt Trội</h1>
+                    <p>Mỗi lần lật trang là một mặt mới của khối lập phương khổng lồ. Hiệu ứng này tạo độ sâu cực mạnh cho giao diện web.</p>
+                    <button class="action-btn" style="background: #0077b6;">Xem Chi Tiết</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="page page-3" id="page-3">
+            <div class="ambient-light light-2" style="background: rgba(199, 21, 133, 0.3);"></div>
+            <div class="content-wrapper" style="flex-direction: column; text-align: center;">
+                <span style="color: #f72585; font-weight: bold; letter-spacing: 2px;">TỐI ƯU CHI PHÍ</span>
+                <h1 style="margin-bottom: 40px;">MẶT TRÁI - BÁO GIÁ</h1>
+                <div style="display: flex; gap: 30px;">
+                    <div class="glass-showcase" style="width: 250px; height: 300px; animation-delay: 0s;">
+                        <h2>BASIC</h2>
+                    </div>
+                    <div class="glass-showcase" style="width: 250px; height: 300px; animation-delay: -2s; transform: translateZ(50px); box-shadow: 0 40px 80px rgba(247, 37, 133, 0.3);">
+                        <h2 style="color: #fff;">PRO</h2>
+                    </div>
+                    <div class="glass-showcase" style="width: 250px; height: 300px; animation-delay: -4s;">
+                        <h2>VIP</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let isAnimating = false;
+
+        const navBtns = document.querySelectorAll('.nav-btn');
+
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (isAnimating) return; 
+                
+                const targetPage = parseInt(this.getAttribute('data-target'));
+                if (targetPage === currentPage) return;
+
+                isAnimating = true;
+
+                navBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                transitionCube(currentPage, targetPage);
+                currentPage = targetPage;
+            });
+        });
+
+        function transitionCube(fromId, toId) {
+            // Xác định hướng xoay: Nếu từ trái qua phải thì xoay khối sang trái, ngược lại thì xoay phải
+            const outClass = toId > fromId ? 'pt-page-rotateCubeLeftOut' : 'pt-page-rotateCubeRightOut';
+            const inClass = toId > fromId ? 'pt-page-rotateCubeLeftIn' : 'pt-page-rotateCubeRightIn';
+
+            const outPage = document.getElementById(`page-${fromId}`);
+            const inPage = document.getElementById(`page-${toId}`);
+
+            // Áp dụng animation lật khối
+            outPage.className = `page page-${fromId} active ${outClass}`;
+            inPage.className = `page page-${toId} ${inClass}`; 
+
+            // Cú lật kéo dài 0.8 giây, sau đó reset lại DOM
+            setTimeout(() => {
+                outPage.className = `page page-${fromId}`; 
+                inPage.className = `page page-${toId} active`; 
+                isAnimating = false;
+            }, 800);
+        }
+    </script>
+</body>
+</html>
