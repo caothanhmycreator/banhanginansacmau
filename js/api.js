@@ -30,7 +30,7 @@ const API = {
     async saveProduct(product) {
         const { data, error } = await supabase.from('products').upsert(product);
         return { data, error };
-    }, // <-- Dấu phẩy cực kỳ quan trọng ở đây!
+    }, // <--- Chính là dấu phẩy "oan nghiệt" này đây sếp!
 
     // 3. QUẢN LÝ UPLOAD ẢNH
     async uploadImage(file, folder = 'products') {
