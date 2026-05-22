@@ -31,5 +31,26 @@ const API = {
         const { data, error } = await supabase.from('products').upsert(product);
         return { data, error };
     }
+    // 3. QUẢN LÝ UPLOAD ẢNH
+    async uploadImage(file, folder = 'products') {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `${folder}/${fileName}`;
+
+        const { error } = await supabase.storage
+            .from('public-images')
+            .upload(filePath, file);
+
+        if (error) {
+            console.error('Lỗi upload:', error);
+            return null;
+        }
+        
+        const { data } = supabase.storage
+            .from('public-images')
+            .getPublicUrl(filePath);
+            
+        return data.publicUrl;
+    }
 };
 

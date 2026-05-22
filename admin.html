@@ -1,29 +1,56 @@
-<div class="admin-dashboard">
-    <aside class="sidebar">
-        <h3>QUẢN TRỊ SẮC MÀU</h3>
-        <ul>
-            <li onclick="showTab('products')">Sản phẩm</li>
-            <li onclick="showTab('menu')">Cấu hình Menu</li>
-            <li onclick="showTab('banners')">Quản lý Banner</li>
-        </ul>
-    </aside>
-    
-    <main class="content">
-        <section id="tab-products">
-            <h2>Đăng Sản Phẩm Mới</h2>
-            <form id="product-form">
-                <input type="text" placeholder="Tên sản phẩm (VD: In Bạt Hiflex)">
-                <input type="number" placeholder="Giá cơ bản">
-                <textarea placeholder="Mô tả vật liệu & quy cách"></textarea>
-                <button type="button" onclick="handleSaveProduct()">LƯU SẢN PHẨM</button>
-            </form>
-        </section>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Trị - In Ấn Sắc Màu</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; padding: 20px; }
+        .admin-container { max-width: 600px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin: 0 auto; }
+        h2 { color: #2D5A27; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #d35400; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #e67e22; }
+    </style>
+</head>
+<body>
 
-        <section id="tab-menu" style="display:none;">
-            <h2>Sửa Menu Chính</h2>
-            <p>Sếp chỉ cần sửa tên hoặc link dưới đây, web sẽ tự cập nhật.</p>
-            <textarea id="menu-json" style="width:100%; height:300px; font-family:monospace;"></textarea>
-            <button onclick="handleSaveMenu()">CẬP NHẬT MENU</button>
-        </section>
-    </main>
-</div>
+    <div class="admin-container">
+        <h2>Đăng Sản Phẩm Mới</h2>
+        <div id="status-message" style="color: green; font-weight: bold; text-align: center; margin-bottom: 15px;"></div>
+        
+        <form id="productForm">
+            <div class="form-group">
+                <label>Tên Sản Phẩm (VD: In Bạt Hiflex)</label>
+                <input type="text" id="prodName" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Giá tham khảo (VNĐ)</label>
+                <input type="number" id="prodPrice" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Mô tả chi tiết</label>
+                <textarea id="prodDesc" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Ảnh Sản Phẩm</label>
+                <input type="file" id="prodImage" accept="image/*" required>
+            </div>
+
+            <button type="button" onclick="submitProduct()" id="submitBtn">LƯU SẢN PHẨM</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="js/api.js"></script>
+    
+    <script src="js/admin.js"></script>
+
+</body>
+</html> 
