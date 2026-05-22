@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>In Ấn Sắc Màu - Landing Page 3D Antigravity</title>
+    <title>In Ấn Sắc Màu - Đặt In Trực Tuyến</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,10 +18,7 @@
             --text-muted: #8a9a90;
         }
 
-        * {
-            box-sizing: border-box;
-            scroll-behavior: smooth;
-        }
+        * { box-sizing: border-box; scroll-behavior: smooth; }
 
         body {
             margin: 0; padding: 0;
@@ -32,20 +29,19 @@
             perspective: 2000px;
         }
 
-        /* --- BACKGROUND ORBS (ANTIGRAVITY EFFECT) --- */
+        /* --- BACKGROUND ORBS --- */
         .ambient-orb {
             position: absolute; border-radius: 50%; filter: blur(120px); z-index: 0; pointer-events: none;
             animation: orbPulse 10s ease-in-out infinite alternate;
         }
         .orb-1 { width: 400px; height: 400px; background: rgba(211, 84, 0, 0.12); top: 15%; right: 10%; }
         .orb-2 { width: 500px; height: 500px; background: rgba(45, 90, 39, 0.25); top: 45%; left: 5%; animation-delay: -3s; }
-        .orb-3 { width: 350px; height: 350px; background: rgba(230, 126, 34, 0.08); bottom: 10%; right: 15%; animation-delay: -6s; }
 
-        /* --- FIXED NAVIGATION --- */
+        /* --- NAVIGATION --- */
         nav {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 5%; box-sizing: border-box;
+            padding: 20px 5%;
             background: rgba(5, 20, 11, 0.7);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
@@ -60,339 +56,180 @@
         .menu a:hover { color: var(--accent-glow); }
 
         /* --- LAYOUT CONFIG --- */
-        section {
-            position: relative; z-index: 10;
-            width: 100%; padding: 120px 8% 80px;
-            box-sizing: border-box;
-            transform-style: preserve-3d;
-        }
-
-        .section-title {
-            text-align: center; margin-bottom: 60px; transform: translateZ(30px);
-        }
+        section { position: relative; z-index: 10; width: 100%; padding: 120px 8% 80px; transform-style: preserve-3d; }
+        .section-title { text-align: center; margin-bottom: 60px; transform: translateZ(30px); }
         .section-title h2 { font-size: 36px; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: 2px; }
         .section-title h2 span { color: var(--accent-glow); }
         .section-title p { color: var(--text-muted); font-style: italic; margin-top: 10px; font-size: 15px; }
 
-        /* --- 1. HERO BANNER SECTION --- */
-        .hero {
-            min-height: 100vh; display: flex; align-items: center; justify-content: space-between; gap: 40px;
-        }
+        /* --- HERO BANNER --- */
+        .hero { min-height: 100vh; display: flex; align-items: center; justify-content: space-between; gap: 40px; }
         .hero-text { flex: 1; max-width: 550px; }
-        .hero-text .badge { 
-            color: var(--accent-glow); font-weight: 800; letter-spacing: 3px; 
-            text-transform: uppercase; font-size: 12px; margin-bottom: 15px; display: block;
-        }
         .hero-text h1 { font-size: 54px; font-weight: 900; margin: 0 0 20px; line-height: 1.1; color: #fff; }
-        .hero-text p { font-size: 16px; line-height: 1.7; color: #a0aec0; margin-bottom: 40px; font-weight: 300; }
+        .hero-text p { font-size: 16px; line-height: 1.7; color: #a0aec0; margin-bottom: 40px; }
         
-        .btn-cta {
-            display: inline-block; padding: 15px 40px;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-glow) 100%);
-            color: #fff; text-decoration: none; font-weight: bold; font-size: 15px;
-            border-radius: 30px; box-shadow: 0 10px 30px rgba(211, 84, 0, 0.3);
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .btn-cta:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 15px 40px rgba(211, 84, 0, 0.5); }
-
-        .hero-showroom {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            transform-style: preserve-3d;
-        }
+        .hero-showroom { flex: 1; display: flex; align-items: center; justify-content: center; transform-style: preserve-3d; }
         .main-show-card {
             width: 380px; height: 460px;
             background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border); border-radius: 24px;
-            padding: 40px; position: relative; transform-style: preserve-3d;
+            position: relative; transform-style: preserve-3d;
             box-shadow: 0 40px 80px rgba(0,0,0,0.5);
             animation: ambientFloat 8s ease-in-out infinite alternate;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .inner-cube {
             width: 160px; height: 160px; background: linear-gradient(135deg, var(--primary) 0%, #4ae05d 100%);
             border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 26px; color: #fff; box-shadow: 0 20px 40px rgba(45,90,39,0.4);
-            position: absolute; top: 40px; left: 40px; transform: translateZ(90px);
-        }
-        .inner-cube.orange-cube {
-            width: 120px; height: 120px; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-glow) 100%);
-            bottom: 60px; right: -20px; top: auto; left: auto;
-            transform: translateZ(140px); box-shadow: 0 20px 40px rgba(211,84,0,0.4);
+            font-weight: 900; font-size: 26px; color: #fff; position: absolute; top: 40px; left: 40px; transform: translateZ(90px);
         }
 
-        /* --- 2. THÔNG TIN LIÊN QUAN / SỐ LIỆU --- */
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; width: 100%;
-        }
-        .stat-card {
-            background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px;
-            text-align: center; transform-style: preserve-3d; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-        }
-        .stat-card:hover { transform: translateZ(50px) translateY(-5px); border-color: rgba(255,255,255,0.2); }
-        .stat-card h3 { font-size: 42px; font-weight: 900; color: var(--accent-glow); margin: 0 0 10px; transform: translateZ(30px); }
-        .stat-card p { font-size: 14px; color: var(--text-muted); margin: 0; transform: translateZ(15px); font-weight: 600; }
-
-        /* --- 3. DANH SÁCH SẢN PHẨM TRƯNG BÀY --- */
-        .products-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px;
-        }
+        /* --- DYNAMIC PRODUCTS GRID --- */
+        .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
         .product-tilt-card {
             background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px;
-            transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s;
+            transform-style: preserve-3d; transition: border-color 0.3s;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            cursor: pointer;
         }
-        .product-tilt-card:hover { border-color: rgba(230, 126, 34, 0.3); }
+        .product-tilt-card:hover { border-color: rgba(230, 126, 34, 0.4); }
         .prod-img-box {
-            width: 100%; height: 160px; background: rgba(255,255,255,0.02); border-radius: 16px;
-            display: flex; align-items: center; justify-content: center; font-weight: 800;
-            color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.05);
-            transform: translateZ(40px); margin-bottom: 20px; font-size: 14px; letter-spacing: 1px;
+            width: 100%; height: 180px; border-radius: 16px;
+            transform: translateZ(40px); margin-bottom: 20px;
+            background-size: cover; background-position: center;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .product-tilt-card h4 { font-size: 18px; font-weight: 700; margin: 0 0 10px; color: #fff; transform: translateZ(25px); }
-        .product-tilt-card p { font-size: 13px; color: var(--text-muted); margin: 0 0 20px; line-height: 1.5; transform: translateZ(15px); text-align: justify;}
+        .product-tilt-card p { font-size: 13px; color: var(--text-muted); margin: 0 0 20px; line-height: 1.5; transform: translateZ(15px); height: 60px; overflow: hidden; }
         .prod-price { font-size: 16px; font-weight: 800; color: var(--accent-glow); transform: translateZ(30px); display: block;}
 
-        /* --- 4. BÀI VIẾT CHUYÊN NGÀNH --- */
-        .blog-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px;
-        }
-        .blog-item-card {
-            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 24px; padding: 35px;
-            display: flex; flex-direction: column; justify-content: space-between;
-            transform-style: preserve-3d; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            box-shadow: 0 20px 45px rgba(0,0,0,0.3);
-        }
-        .blog-item-card:hover { transform: translateZ(40px); border-color: rgba(255,255,255,0.15); }
-        .blog-meta { font-size: 12px; color: var(--accent-glow); font-weight: 600; text-transform: uppercase; transform: translateZ(15px); }
-        .blog-item-card h3 { font-size: 22px; font-weight: 700; margin: 10px 0 15px; color: #fff; transform: translateZ(30px); line-height: 1.3; }
-        .blog-item-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin: 0 0 25px; transform: translateZ(20px); text-align: justify; }
-        .read-more { color: #fff; text-decoration: none; font-size: 13px; font-weight: 700; transform: translateZ(25px); display: inline-block; transition: 0.3s;}
-        .read-more:hover { color: var(--accent-glow); padding-left: 5px; }
-
-        /* --- 5. FOOTER SECTION --- */
-        footer {
-            position: relative; z-index: 10;
-            background: rgba(5, 15, 9, 0.9); border-top: 1px solid var(--glass-border);
-            padding: 60px 8% 30px; box-sizing: border-box; transform-style: preserve-3d;
-        }
-        .footer-content {
-            display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 40px;
-        }
-        .footer-about h3 { font-size: 20px; font-weight: 900; margin: 0 0 15px; }
-        .footer-about h3 span { color: var(--accent-glow); }
-        .footer-about p { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; max-width: 400px; }
-        .footer-links h4 { font-size: 14px; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0 0 20px; letter-spacing: 1px;}
-        .footer-links ul { list-style: none; padding: 0; margin: 0; }
-        .footer-links li { margin-bottom: 12px; }
-        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: 0.3s; }
+        /* --- FOOTER --- */
+        footer { background: rgba(5, 15, 9, 0.9); border-top: 1px solid var(--glass-border); padding: 60px 8% 30px; }
+        .footer-content { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; }
+        .footer-about p { color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+        .footer-links ul { list-style: none; padding: 0; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; }
         .footer-links a:hover { color: #fff; }
-        .copyright { text-align: center; font-size: 12px; color: #4a5568; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 25px; margin-top: 25px; }
+        .copyright { text-align: center; font-size: 12px; color: #4a5568; margin-top: 25px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.03); }
 
-        /* --- ANIMATIONS KEYFRAMES --- */
-        @keyframes ambientFloat {
-            0% { transform: translateY(0) rotateX(3deg) rotateY(-5deg); }
-            100% { transform: translateY(-15px) rotateX(-3deg) rotateY(5deg); }
-        }
-        @keyframes orbPulse {
-            0% { transform: scale(1) translate(0, 0); }
-            100% { transform: scale(1.1) translate(20px, -20px); }
-        }
-
-        @media (max-width: 1024px) {
-            .products-grid, .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .hero { flex-direction: column; text-align: center; padding-top: 140px; }
-            .hero-showroom { margin-top: 5px; }
-            .blog-grid, .footer-content { grid-template-columns: 1fr; }
-        }
+        @keyframes ambientFloat { 0% { transform: translateY(0) rotateX(3deg) rotateY(-5deg); } 100% { transform: translateY(-15px) rotateX(-3deg) rotateY(5deg); } }
+        @keyframes orbPulse { 0% { transform: scale(1); } 100% { transform: scale(1.05) translate(10px, -10px); } }
+        @media (max-width: 1024px) { .products-grid { grid-template-columns: repeat(2, 1fr); } .hero { flex-direction: column; text-align: center; } .footer-content { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <!-- Khối hạt màu nền -->
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
-    <div class="ambient-orb orb-3"></div>
 
-    <!-- Thanh Menu -->
     <nav>
         <div class="logo">SẮC MÀU<span>.</span></div>
         <div class="menu">
             <a href="#hero">Trang Chủ</a>
             <a href="#products">Sản Phẩm</a>
-            <a href="#blog">Kiến Thức</a>
             <a href="#footer">Liên Hệ</a>
         </div>
     </nav>
 
-    <!-- 1. HERO BANNER -->
     <section class="hero" id="hero">
         <div class="hero-text">
-            <span class="badge">Since 2017 • Dong Thap</span>
             <h1>In Ấn Đột Phá Không Giới Hạn</h1>
-            <p>Hệ thống đặt in trực tuyến hiện đại của Tiệm In Sắc Màu. Thiết kế logo thương hiệu, ấn phẩm văn phòng và thi công quảng cáo chuyên nghiệp với chất lượng hiển thị sắc nét nhất.</p>
-            <a href="#products" class="btn-cta">XEM BẢNG BÁO GIÁ</a>
+            <p>Hệ thống đặt in trực tuyến hiện đại của Tiệm In Sắc Màu. Thiết kế ấn phẩm văn phòng và thi công quảng cáo chuyên nghiệp với chất lượng hiển thị sắc nét nhất.</p>
+            <a href="#products" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-glow) 100%); color: #fff; text-decoration: none; font-weight: bold; border-radius: 30px;">XEM BẢNG BÁO GIÁ</a>
         </div>
-
         <div class="hero-showroom" id="heroShowroom">
             <div class="main-show-card" id="heroCard">
                 <div class="inner-cube">CMYK</div>
-                <div class="inner-cube orange-cube">ĐỘ NÉT</div>
             </div>
         </div>
     </section>
 
-    <!-- 2. THÔNG TIN LIÊN QUAN / SỐ LIỆU -->
-    <section id="stats">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>2017</h3>
-                <p>NĂM HOẠT ĐỘNG</p>
-            </div>
-            <div class="stat-card">
-                <h3>10K+</h3>
-                <p>ĐƠN HOÀN THÀNH</p>
-            </div>
-            <div class="stat-card">
-                <h3>99%</h3>
-                <p>KHÁCH HÀI LÒNG</p>
-            </div>
-            <div class="stat-card">
-                <h3>24/7</h3>
-                <p>HỖ TRỢ ĐẶT HÀNG</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. DANH SÁCH SẢN PHẨM -->
     <section id="products">
         <div class="section-title">
             <h2>Sản Phẩm <span>Chủ Lực</span></h2>
-            <p>Báo giá tham khảo vật liệu và quy cách in ấn tối ưu</p>
+            <p>Dữ liệu cập nhật theo thời gian thực từ kho hệ thống</p>
         </div>
         
-        <div class="products-grid" id="productsGrid">
-            <!-- Sản phẩm 1 -->
-            <div class="product-tilt-card">
-                <div class="prod-img-box">[ BANNER HIFLEX ]</div>
-                <h4>In Bạt Quảng Cáo</h4>
-                <p>In bạt khổ lớn dày dặn, chịu bão nắng tốt, chuyên phục vụ biển hiệu ngoài trời và sự kiện.</p>
-                <span class="prod-price">Từ 30.000 đ / m²</span>
+        <div class="products-grid" id="dynamicProductsGrid">
             </div>
-            <!-- Sản phẩm 2 -->
-            <div class="product-tilt-card">
-                <div class="prod-img-box">[ TEM DECAL ]</div>
-                <h4>Decal Tem Nhãn</h4>
-                <p>Decal giấy/nhựa bế chính xác theo mọi hình dáng độc lạ, cán màng bóng bảo vệ mực tuyệt đối.</p>
-                <span class="prod-price">Từ 120.000 đ / mét</span>
-            </div>
-            <!-- Sản phẩm 3 -->
-            <div class="product-tilt-card">
-                <div class="prod-img-box">[ NAME CARD ]</div>
-                <h4>Danh Thiếp VIP</h4>
-                <p>Giấy mỹ thuật dày dặn, ép kim bo góc cao cấp, thể hiện đẳng cấp riêng của chủ doanh nghiệp.</p>
-                <span class="prod-price">Từ 90.000 đ / hộp</span>
-            </div>
-            <!-- Sản phẩm 4 -->
-            <div class="product-tilt-card">
-                <div class="prod-img-box">[ FOLDER BÌA KẸP ]</div>
-                <h4>Kẹp File Tài Liệu</h4>
-                <p>Bìa folder cứng cáp cán màng mờ, tích hợp tai cài danh thiếp tiện lợi cho văn phòng.</p>
-                <span class="prod-price">Từ 6.500 đ / cái</span>
-            </div>
-        </div>
     </section>
 
-    <!-- 4. BÀI VIẾT KIẾN THỨC -->
-    <section id="blog">
-        <div class="section-title">
-            <h2>Kiến Thức <span>Ngành In</span></h2>
-            <p>Chia sẻ chuyên môn giúp bạn có bản in hoàn hảo nhất</p>
-        </div>
-
-        <div class="blog-grid">
-            <!-- Bài viết 1 -->
-            <div class="blog-item-card">
-                <div>
-                    <span class="blog-meta">Hệ Màu Kỹ Thuật</span>
-                    <h3>Tại sao phải ép file về hệ màu CMYK trước khi đem đi in?</h3>
-                    <p>Màn hình hiển thị bằng ánh sáng RGB, nhưng máy in lại phun mực theo cơ chế phối màu CMYK. Việc không chuyển hệ màu trước sẽ làm sai lệch màu sắc thực tế lên tới 30%...</p>
-                </div>
-                <a href="#" class="read-more">Đọc bài viết →</a>
-            </div>
-            <!-- Bài viết 2 -->
-            <div class="blog-item-card">
-                <div>
-                    <span class="blog-meta">Kinh Nghiệm Thiết Kế</span>
-                    <h3>Cách xuất file PDF in ấn độ phân giải cao không bị nhòe vỡ</h3>
-                    <p>Để biển bạt quảng cáo hay tờ rơi đạt độ sắc nét căng tối đa, thợ thiết kế bắt buộc phải thiết lập mật độ điểm ảnh đạt từ 150dpi đến 300dpi và vector hóa toàn bộ font chữ...</p>
-                </div>
-                <a href="#" class="read-more">Đọc bài viết →</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. FOOTER -->
     <footer id="footer">
         <div class="footer-content">
             <div class="footer-about">
                 <h3>IN ẤN SẮC MÀU<span>.</span></h3>
-                <p>Xưởng in ấn và thiết kế quảng cáo chuyên nghiệp tại TP. Cao Lãnh, Đồng Tháp. Đồng hành định hình và củng cố sức mạnh thương hiệu cho hàng nghìn doanh nghiệp từ năm 2017.</p>
-            </div>
-            <div class="footer-links">
-                <h4>Dịch Vụ</h4>
-                <ul>
-                    <li><a href="#products">In biển hiệu quảng cáo</a></li>
-                    <li><a href="#products">In decal tem nhãn bế mẫu</a></li>
-                    <li><a href="#products">In văn phòng phẩm doanh nghiệp</a></li>
-                </ul>
+                <p>Xưởng in ấn và thiết kế quảng cáo chuyên nghiệp tại TP. Cao Lãnh, Đồng Tháp.</p>
             </div>
             <div class="footer-links">
                 <h4>Liên Hệ Hỗ Trợ</h4>
                 <ul>
-                    <li><a href="#">Địa chỉ: Nguyễn Văn Cừ, P.4, Cao Lãnh</a></li>
-                    <li><a href="#">Hotline 1: 0337.663.113 (Mrs Ly)</a></li>
-                    <li><a href="#">Hotline 2: 0399.221.753 (Mrs Ngọc)</a></li>
+                    <li>Địa chỉ: Nguyễn Văn Cừ, P.4, Cao Lãnh</li>
+                    <li>Hotline: 0337.663.113 (Mrs Ly)</li>
                 </ul>
             </div>
         </div>
-        <div class="copyright">
-            &copy; 2026 Hộ Kinh Doanh Sắc Màu. All rights reserved. Designed for banhang.inansacmaudongthap.com.
-        </div>
+        <div class="copyright">&copy; 2026 Hộ Kinh Doanh Sắc Màu. All rights reserved.</div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="js/api.js"></script>
+
     <script>
-        // --- MULTI-CARD REUSABLE 3D TILT EFFECT LOGIC ---
-        function apply3DTilt(element, container) {
-            container.addEventListener('mousemove', (e) => {
-                const { width, height, left, top } = container.getBoundingClientRect();
+        // --- HIỆU ỨNG NGHIÊNG ĐỒ HỌA 3D TILT CARD ---
+        function apply3DTilt(card) {
+            card.addEventListener('mousemove', (e) => {
+                const { width, height, left, top } = card.getBoundingClientRect();
                 const mouseX = (e.clientX - left - width / 2) / (width / 2);
                 const mouseY = (e.clientY - top - height / 2) / (height / 2);
-                
-                const rotateX = mouseY * -20; // max 20 độ nghiêng
-                const rotateY = mouseX * 20;
-
-                element.style.transition = 'none';
-                element.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                card.style.transform = `rotateX(${mouseY * -15}deg) rotateY(${mouseX * 15}deg)`;
             });
-
-            container.addEventListener('mouseleave', () => {
-                element.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
-                element.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `rotateX(0deg) rotateY(0deg)`;
             });
         }
 
-        // Kích hoạt Tilt cho riêng thẻ Hero chính
-        apply3DTilt(document.getElementById('heroCard'), document.getElementById('heroShowroom'));
+        apply3DTilt(document.getElementById('heroCard'));
 
-        // Tự động kích hoạt hiệu ứng nghiêng 3D cho toàn bộ Danh sách sản phẩm
-        document.querySelectorAll('.product-tilt-card').forEach(card => {
-            apply3DTilt(card, card);
-        });
+        // --- TIẾN HÀNH HÚT DỮ LIỆU TỪ SUPABASE ĐỔ RA WEB KHÁCH ---
+        async function loadStorefrontProducts() {
+            const gridContainer = document.getElementById('dynamicProductsGrid');
+            
+            // Gọi hàm lấy danh sách sản phẩm từ file js/api.js
+            const products = await API.getProducts();
+
+            if (!products || products.length === 0) {
+                gridContainer.innerHTML = `<p style="grid-column: span 4; text-align:center; color:var(--text-muted);">Đang cập nhật sản phẩm mới từ xưởng...</p>`;
+                return;
+            }
+
+            // Xóa sạch thông báo cũ
+            gridContainer.innerHTML = '';
+
+            // Vòng lặp dựng giao diện cho từng sản phẩm thật
+            products.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = 'product-tilt-card';
+                
+                // Định dạng hiển thị tiền Việt Nam Đồng (VD: 15000 -> 15.000 đ)
+                const formattedPrice = new Number(prod.price).toLocaleString('vi-VN') + ' đ';
+
+                card.innerHTML = `
+                    <div class="prod-img-box" style="background-image: url('${prod.image_url}')"></div>
+                    <h4>${prod.name}</h4>
+                    <p>${prod.description}</p>
+                    <span class="prod-price">Giá: ${formattedPrice}</span>
+                `;
+
+                // Kích hoạt tính năng nghiêng 3D ngay khi thẻ vừa được tạo ra
+                apply3DTilt(card);
+                
+                // Thêm thẻ vào lưới hiển thị
+                gridContainer.appendChild(card);
+            });
+        }
+
+        // Chạy hàm tải sản phẩm ngay khi trang web được mở ra
+        window.addEventListener('DOMContentLoaded', loadStorefrontProducts);
     </script>
 </body>
 </html>
