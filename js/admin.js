@@ -44,6 +44,10 @@ async function processSubmitProduct() {
     const content = document.getElementById('prodContent').value.trim();
     const imageFile = document.getElementById('prodImage').files[0];
 
+    // --- MỚI NÂNG CẤP: Lấy danh sách file từ input thư viện ảnh ---
+    const galleryInput = document.getElementById('prodGallery');
+    const galleryFiles = galleryInput ? galleryInput.files : [];
+
     if (!name || !slug || !price || !desc || !imageFile) {
         alert("Sếp ơi, vui lòng điền đầy đủ các mục bắt buộc và chọn ảnh đại diện nhé!");
         return;
@@ -72,6 +76,20 @@ async function processSubmitProduct() {
         const imageUrl = await API.uploadImage(imageFile, 'products');
         if (!imageUrl) { throw new Error("Không tải được ảnh lên kho."); }
 
+        // --- MỚI NÂNG CẤP: UPLOAD NHIỀU ẢNH THƯ VIỆN ---
+        let galleryUrls = [];
+        if (galleryFiles.length > 0) {
+            for (let i = 0; i < galleryFiles.length; i++) {
+                btn.innerText = `ĐANG TẢI THƯ VIỆN ẢNH (${i+1}/${galleryFiles.length})...`;
+                // Tận dụng hàm uploadImage, lưu vào thư mục con products/gallery
+                const url = await API.uploadImage(galleryFiles[i], 'products/gallery'); 
+                if (url) {
+                    galleryUrls.push(url);
+                }
+            }
+        }
+        // -----------------------------------------------
+
         // 2. Gom cụm dữ liệu Thông số kỹ thuật thành Object JSON
         const specsObj = {};
         const specKeys = document.querySelectorAll('.spec-key');
@@ -88,42 +106,3 @@ async function processSubmitProduct() {
         const tierPrices = document.querySelectorAll('.tier-price');
         tierLabels.forEach((labelInput, i) => {
             const l = labelInput.value.trim();
-            const p = parseFloat(tierPrices[i].value);
-            if (l && !isNaN(p)) {
-                tiersArr.push({ label: l, price: p });
-            }
-        });
-
-        // 4. Đóng gói toàn bộ cấu trúc để bắn lên Supabase
-        const finalPayload = {
-            name: name,
-            slug: slug,
-            price: parseFloat(price),
-            description: desc,
-            content: content,
-            image_url: imageUrl,
-            specs: Object.keys(specsObj).length > 0 ? specsObj : null,
-            price_tiers: tiersArr.length > 0 ? tiersArr : null
-        };
-
-        btn.innerText = "ĐANG GHI DỮ LIỆU VÀO HỆ THỐNG...";
-        const { error } = await API.saveProduct(finalPayload);
-
-        if (error) {
-            alert("Lỗi hệ thống: " + error.message);
-        } else {
-            alert("🎉 Xuất sắc sếp ơi! Sản phẩm mới đã được phát hành thành công và không lo đụng hàng!");
-            document.getElementById('productForm').reset();
-            // Xóa bớt các dòng động về mặc định
-            document.getElementById('specs-container').innerHTML = '<div class="dynamic-row"><input type="text" class="spec-key" placeholder="Tên"><input type="text" class="spec-val" placeholder="Giá trị"></div>';
-            document.getElementById('tiers-container').innerHTML = '<div class="dynamic-row"><input type="text" class="tier-label" placeholder="Gói"><input type="number" class="tier-price" placeholder="Giá"></div>';
-        }
-
-    } catch (err) {
-        console.error(err);
-        alert("Có lỗi phát sinh trong quá trình xử lý!");
-    }
-
-    btn.innerText = "Lưu và phát hành sản phẩm";
-    btn.disabled = false;
-}

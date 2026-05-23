@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // 2. Gọi API lấy dữ liệu từ Supabase
-    const product = await API.getProductById(productId);
+    // 2. Gọi API lấy dữ liệu từ Supabase (ĐÃ CẬP NHẬT TÌM THEO SLUG)
+    const product = await API.getProductBySlug(productId);
 
     if (!product) {
         loading.innerText = "Sản phẩm không tồn tại hoặc đã bị xóa!";

@@ -55,12 +55,13 @@ const API = {
             
         return data.publicUrl;
     },
-    // Lấy chi tiết 1 sản phẩm dựa vào ID
-    async getProductById(id) {
+    
+    // Lấy chi tiết 1 sản phẩm dựa vào SLUG
+    async getProductBySlug(slug) {
         const { data, error } = await supabaseClient
             .from('products')
             .select('*')
-            .eq('id', id)
+            .eq('slug', slug) // Tìm chính xác theo cột slug
             .single(); // Lệnh single() đảm bảo chỉ lấy đúng 1 dòng
             
         if (error) {
