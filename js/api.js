@@ -69,5 +69,73 @@ const API = {
             return null;
         }
         return data;
+    },
+    
+    // 4. Gửi thông tin đặt hàng/báo giá vào bảng orders
+    async submitOrder(orderData) {
+        const { data, error } = await supabaseClient
+            .from('orders')
+            .insert([orderData]);
+            
+        if (error) {
+            console.error('Lỗi gửi đơn hàng:', error);
+            return { success: false, error };
+        }
+        return { success: true, data };
+    },
+
+    // 5. QUẢN LÝ ĐƠN HÀNG (DÀNH CHO ADMIN)
+    async getOrders() {
+        const { data, error } = await supabaseClient
+            .from('orders')
+            .select('*')
+            .order('created_at', { ascending: false }); // Lấy đơn mới nhất lên đầu
+            
+        if (error) {
+            console.error('Lỗi lấy danh sách đơn hàng:', error);
+            return [];
+        }
+        return data;
+    },
+
+    async updateOrder(id, updateData) {
+        const { data, error } = await supabaseClient
+            .from('orders')
+            .update(updateData)
+            .eq('id', id);
+            
+        if (error) {
+            console.error('Lỗi cập nhật đơn hàng:', error);
+            return { success: false, error };
+        }
+        return { success: true, data };
+    },
+
+    async deleteOrder(id) {
+        const { error } = await supabaseClient
+            .from('orders')
+            .delete()
+            .eq('id', id);
+            
+        if (error) {
+            console.error('Lỗi xóa đơn hàng:', error);
+            return false;
+        }
+        return true;
+    },
+    // Lấy danh sách sản phẩm theo từ khóa (dùng cho danh mục)
+    async getProductsByKeyword(keyword) {
+        const { data, error } = await supabaseClient
+            .from('products')
+            .select('*')
+            .ilike('slug', `%${keyword}%`) // Tìm các sản phẩm có mã slug chứa từ khóa
+            .order('created_at', { ascending: false });
+            
+        if (error) {
+            console.error('Lỗi lọc sản phẩm:', error);
+            return [];
+        }
+        return data;
     }
-};
+
+}; // Đóng const API

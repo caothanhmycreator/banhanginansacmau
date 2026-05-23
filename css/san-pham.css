@@ -1,0 +1,22 @@
+/* --- BỐ CỤC TRANG DANH SÁCH SẢN PHẨM --- */
+.category-container { max-width: 1200px; margin: 120px auto 50px; padding: 0 20px; }
+.category-header { text-align: center; margin-bottom: 50px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+.category-title { font-size: 36px; color: #fff; text-transform: uppercase; font-weight: 900; letter-spacing: 2px; margin: 0; }
+.category-title span { color: var(--accent-glow); }
+.category-desc { color: #94a3b8; font-size: 16px; margin-top: 10px; }
+
+/* LƯỚI SẢN PHẨM */
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 30px; }
+
+/* THẺ SẢN PHẨM (CARD) */
+.product-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; }
+.product-card:hover { border-color: var(--accent-glow); box-shadow: 0 10px 30px rgba(230, 81, 0, 0.15); }
+
+.card-img { width: 100%; height: 260px; background-size: cover; background-position: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+.card-body { padding: 25px 20px; display: flex; flex-direction: column; flex-grow: 1; }
+.card-title { margin: 0 0 10px; font-size: 18px; font-weight: 700; color: #fff; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-price { font-size: 22px; font-weight: 900; color: var(--accent-glow); margin-bottom: 20px; }
+
+.btn-view { display: block; text-align: center; background: rgba(0,0,0,0.3); color: #fff; text-decoration: none; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; margin-top: auto; }
+.product-card:hover .btn-view { background: var(--accent); border-color: var(--accent-glow); }

@@ -5,76 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi Tiết Sản Phẩm - In Ấn Sắc Màu</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="css/global.css">
-    <style>
-        /* CSS riêng cho trang chi tiết */
-        .product-container { max-width: 1200px; margin: 120px auto 50px; padding: 0 20px; display: flex; gap: 50px; }
-        .product-gallery { flex: 1; }
-        .main-image { width: 100%; height: 400px; border-radius: 16px; background-size: cover; background-position: center; border: 1px solid var(--glossy-border-top); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        .product-info { flex: 1; }
-        .product-info h1 { font-size: 32px; color: #fff; margin: 0 0 15px; }
-        .product-price { font-size: 28px; color: var(--accent-glow); font-weight: 900; margin-bottom: 25px; }
-        
-        .specs-box { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 3px solid var(--primary); }
-        .specs-box h3 { margin: 0 0 15px; color: var(--text-main); font-size: 16px; text-transform: uppercase;}
-        .specs-list { list-style: none; padding: 0; margin: 0; color: var(--text-muted); font-size: 15px; line-height: 1.8; }
-        .specs-list li { border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 8px; }
-        .specs-list li strong { color: #fff; display: inline-block; width: 120px; }
-
-        .price-tiers { margin-bottom: 30px; }
-        .tier-btn { background: var(--bg-mid); color: var(--text-main); border: 1px solid var(--primary); padding: 12px 20px; border-radius: 8px; cursor: pointer; margin-right: 10px; margin-bottom: 10px; font-weight: bold; transition: 0.2s;}
-        .tier-btn:hover, .tier-btn.active { background: var(--accent); border-color: var(--accent-glow); color: #fff; }
-
-        .action-buttons { display: flex; gap: 15px; }
-        .btn-order { flex: 1; padding: 15px; background: var(--accent); color: #fff; text-align: center; font-weight: bold; font-size: 16px; border-radius: 8px; cursor: pointer; border: none; text-transform: uppercase;}
-        .btn-contact { flex: 1; padding: 15px; background: #2D5A27; color: #fff; text-align: center; font-weight: bold; font-size: 16px; border-radius: 8px; cursor: pointer; border: none; text-transform: uppercase;}
-
-        .product-article { max-width: 1200px; margin: 0 auto 80px; padding: 40px; background: var(--glossy-bg); border-radius: 16px; border: 1px solid var(--glossy-border-top); }
-        .product-article h2 { color: var(--accent-glow); margin-top: 0; }
-        .product-article .content { color: var(--text-muted); line-height: 1.8; font-size: 16px; text-align: justify; }
-
-        @media (max-width: 768px) { .product-container { flex-direction: column; } }
-    </style>
+    <link rel="stylesheet" href="css/product.css">
 </head>
 <body>
 
     <header id="dynamic-header"></header>
 
-    <div id="loading" style="text-align:center; padding: 150px; color: var(--accent-glow); font-weight:bold;">Đang tải dữ liệu sản phẩm...</div>
+    <div id="loading" style="text-align:center; padding: 150px; color: var(--accent-glow); font-weight:bold; font-size: 18px;">
+        Đang tải dữ liệu sản phẩm...
+    </div>
 
     <div id="product-wrapper" style="display: none;">
         <section class="product-container">
             <div class="product-gallery">
                 <div class="main-image" id="sp-image"></div>
+                <div class="gallery-thumbnails" id="sp-gallery-thumbs"></div>
+                
+                <div class="specs-box" style="margin-top: 30px;">
+                    <h3>Thông Số Cơ Bản</h3>
+                    <ul class="specs-list" id="sp-specs"></ul>
+                </div>
             </div>
             
             <div class="product-info">
                 <h1 id="sp-name">Tên sản phẩm</h1>
                 <div class="product-price" id="sp-price">0 đ</div>
-                
-                <div class="specs-box">
-                    <h3>Thông Số Kỹ Thuật</h3>
-                    <ul class="specs-list" id="sp-specs">
-                        </ul>
-                </div>
 
-                <div class="price-tiers" id="sp-tiers">
-                    <h3 style="font-size: 14px; color: var(--text-muted); margin-bottom: 10px;">Chọn gói in:</h3>
+                <div class="order-form">
+                    <h3>Tùy Chọn Đặt Hàng Của Bạn</h3>
+                    
+                    <div class="form-row" id="sp-tiers-container">
+                        <label>Chọn gói quy cách / Số lượng có sẵn (*)</label>
+                        <div class="price-tiers" id="sp-tiers"></div>
                     </div>
 
-                <div class="action-buttons">
-                    <button class="btn-order">Tải File Đặt Hàng</button>
-                    <button class="btn-contact">Zalo Tư Vấn: 0337.663.113</button>
+                    <div class="form-row">
+                        <label>Hoặc nhập số lượng tùy chỉnh</label>
+                        <input type="number" id="orderQty" placeholder="Ví dụ: 1500 hộp (Để trống nếu chọn gói trên)">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Tình trạng File thiết kế</label>
+                        <select id="orderDesign">
+                            <option value="Đã có thiết kế sẵn">Tôi đã có file thiết kế (Chỉ cần in)</option>
+                            <option value="Cần hỗ trợ thiết kế mới">Tôi chưa có file, cần hỗ trợ thiết kế</option>
+                            <option value="Cần chỉnh sửa file cũ">Tôi có file cũ nhưng cần chỉnh sửa lại</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Ghi chú yêu cầu thêm</label>
+                        <textarea id="orderNote" rows="3" placeholder="Ghi chú thêm về gia công hoặc thời gian giao hàng..."></textarea>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-order" onclick="openOrderModal()">GỬI YÊU CẦU BÁO GIÁ</button>
+                        <button class="btn-contact">Chat Zalo Tư Vấn Nhanh: 0337.663.113</button>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section class="product-article">
             <h2>Chi tiết sản phẩm</h2>
-            <div class="content" id="sp-content">
-                </div>
+            <div class="content" id="sp-content"></div>
         </section>
+    </div>
+
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeOrderModal()">&times;</span>
+            <h3>Thông tin liên hệ nhận báo giá</h3>
+            
+            <div class="form-row">
+                <label>Tên của bạn / Tên Doanh Nghiệp (*)</label>
+                <input type="text" id="cusName" placeholder="Họ và tên Khách hàng" required>
+            </div>
+            <div class="form-row">
+                <label>Số điện thoại / Zalo (*)</label>
+                <input type="tel" id="cusPhone" placeholder="Nhập số Zalo để nhận báo giá/thiết kế" required>
+            </div>
+            
+            <button class="btn-order" style="width: 100%; margin-top: 10px;" id="btnSubmitFinalOrder" onclick="processFinalOrder()">Xác Nhận Gửi Yêu Cầu</button>
+        </div>
     </div>
 
     <footer id="dynamic-footer"></footer>
@@ -83,5 +98,53 @@
     <script src="js/components.js"></script>
     <script src="js/api.js"></script>
     <script src="js/frontend.js"></script>
+    
+    <script>
+        // --- NÂNG CẤP: LOGIC AUTO-SLIDE HÌNH ẢNH ---
+        let autoSlideTimer;
+
+        // Hàm đổi ảnh chính
+        function changeMainImage(url, thumbElement) {
+            document.getElementById('sp-image').style.backgroundImage = `url('${url}')`;
+            
+            document.querySelectorAll('.thumb-img').forEach(el => el.classList.remove('active'));
+            if(thumbElement) thumbElement.classList.add('active');
+            
+            // Khởi động lại bộ đếm giờ nếu khách vừa bấm
+            resetAutoSlide();
+        }
+
+        // Logic đếm giờ trượt ảnh
+        function resetAutoSlide() {
+            clearInterval(autoSlideTimer);
+            autoSlideTimer = setInterval(() => {
+                const thumbs = Array.from(document.querySelectorAll('.thumb-img'));
+                if (thumbs.length > 1) {
+                    // Tìm vị trí ảnh đang sáng
+                    let activeIdx = thumbs.findIndex(t => t.classList.contains('active'));
+                    // Nhảy sang ảnh tiếp theo, nếu đến cuối thì vòng lại 0
+                    let nextIdx = (activeIdx + 1) % thumbs.length;
+                    
+                    // Lấy link ảnh từ background-image của ảnh thu nhỏ tiếp theo
+                    let nextBg = thumbs[nextIdx].style.backgroundImage;
+                    let url = nextBg.replace(/^url\(["']?/, '').replace(/["']?\)$/, ''); 
+                    
+                    changeMainImage(url, thumbs[nextIdx]);
+                }
+            }, 3000); // 3000ms = 3 giây đổi ảnh 1 lần
+        }
+
+        // Kích hoạt Auto-slide sau khi trang tải xong (Đợi 2 giây cho API bơm ảnh)
+        setTimeout(resetAutoSlide, 2000);
+
+        // Tạm dừng trượt khi khách di chuột vào khu vực ảnh
+        document.querySelector('.product-gallery').addEventListener('mouseenter', () => clearInterval(autoSlideTimer));
+        document.querySelector('.product-gallery').addEventListener('mouseleave', resetAutoSlide);
+        // ------------------------------------------
+
+        // Logic Mở/Đóng Popup Đặt Hàng
+        function openOrderModal() { document.getElementById('orderModal').style.display = 'flex'; }
+        function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
+    </script>
 </body>
 </html>

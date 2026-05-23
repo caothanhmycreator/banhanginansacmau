@@ -14,6 +14,7 @@
         <h2>SẮC MÀU <span>CMS</span></h2>
         <ul class="nav-menu">
             <li class="nav-item active" onclick="switchTab('tab-products', this)">Sản Phẩm</li>
+            <li class="nav-item" onclick="switchTab('tab-orders', this)">Quản Lý Đơn Hàng</li>
             <li class="nav-item" onclick="switchTab('tab-posts', this)">Bài Viết (Blog)</li>
             <li class="nav-item" onclick="switchTab('tab-intro', this)">Sửa Giới Thiệu</li>
             <li class="nav-item" onclick="switchTab('tab-contact', this)">Thông Tin Liên Hệ</li>
@@ -26,6 +27,8 @@
         <div id="tab-products" class="panel active">
             <h3>Đăng Sản Phẩm Cao Cấp</h3>
             <form id="productForm">
+                <input type="hidden" id="prodId" value="">
+
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Tên sản phẩm</label>
@@ -41,7 +44,7 @@
                     </div>
                     <div class="form-group">
                         <label>Ảnh đại diện sản phẩm</label>
-                        <input type="file" id="prodImage" accept="image/*" required>
+                        <input type="file" id="prodImage" accept="image/*">
                     </div>
                     
                     <div class="form-group full-width">
@@ -82,7 +85,48 @@
                     </div>
                 </div>
                 <button type="button" class="btn-submit" id="submitBtn" onclick="processSubmitProduct()">Lưu và phát hành sản phẩm</button>
+                
+                <button type="button" id="cancelEditBtn" onclick="exitEditMode()" style="display: none; background: #334155; color: #fff; border: none; padding: 15px 40px; font-size: 15px; font-weight: 700; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; width: 100%; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">Hủy chế độ sửa</button>
             </form>
+
+            <div style="margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 40px;">
+                <h3 style="font-size: 22px; margin-top: 0; margin-bottom: 20px; font-weight: 800;">Danh Sách Sản Phẩm Hiện Có</h3>
+                <div style="overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border-color);">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #94a3b8;">
+                                <th style="padding: 15px 20px; width: 100px;">Ảnh</th>
+                                <th style="padding: 15px 20px;">Tên sản phẩm</th>
+                                <th style="padding: 15px 20px;">Mã Slug (ID link)</th>
+                                <th style="padding: 15px 20px;">Giá gốc</th>
+                                <th style="padding: 15px 20px; text-align: right; width: 120px;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-product-list">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-orders" class="panel">
+            <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 20px;">Quản Lý Đơn Đặt Hàng & Báo Giá</h3>
+            <div style="overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border-color);">
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #94a3b8;">
+                            <th style="padding: 15px 20px;">Thời gian</th>
+                            <th style="padding: 15px 20px;">Khách hàng</th>
+                            <th style="padding: 15px 20px;">Yêu cầu in ấn</th>
+                            <th style="padding: 15px 20px; text-align: center;">Trạng thái</th>
+                            <th style="padding: 15px 20px; text-align: right; min-width: 180px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-order-list">
+                        <tr><td colspan="5" style="padding: 20px; text-align: center; color: #94a3b8;">Đang tải dữ liệu đơn hàng...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div id="tab-posts" class="panel">
@@ -94,6 +138,29 @@
         <div id="tab-contact" class="panel"><h3>Quản lý trang Liên Hệ</h3></div>
 
     </main>
+
+    <div class="modal-overlay" id="editOrderModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div class="modal-content" style="background: var(--bg-admin); border: 1px solid var(--primary); padding: 35px; border-radius: 16px; width: 90%; max-width: 500px; position: relative;">
+            <span class="close-modal" onclick="document.getElementById('editOrderModal').style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; color: #94a3b8; cursor: pointer;">&times;</span>
+            <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; font-size: 20px;">Chỉnh Sửa Đơn Hàng</h3>
+            
+            <input type="hidden" id="editOrderId">
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Tên Khách Hàng</label>
+                <input type="text" id="editOrderName" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 12px 15px; border-radius: 8px; color: #fff;">
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Số Điện Thoại / Zalo</label>
+                <input type="text" id="editOrderPhone" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 12px 15px; border-radius: 8px; color: #fff;">
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Ghi chú của Admin (Khách không thấy)</label>
+                <textarea id="editOrderAdminNote" rows="3" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 12px 15px; border-radius: 8px; color: #fff;" placeholder="Ghi chú nội bộ quá trình xử lý..."></textarea>
+            </div>
+            
+            <button type="button" class="btn-submit" onclick="processUpdateOrder()" style="width: 100%; margin-top: 10px;">LƯU THAY ĐỔI</button>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/api.js"></script>
