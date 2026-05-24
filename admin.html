@@ -134,7 +134,39 @@
             <p style="color: #94a3b8;">Hệ thống form đăng bài đang kết nối đồng bộ sẵn sàng...</p>
         </div>
 
-        <div id="tab-intro" class="panel"><h3>Quản lý trang Giới Thiệu</h3></div>
+        <div id="tab-intro" class="panel">
+            <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 20px;">Quản Lý Trang Giới Thiệu</h3>
+            <form id="introForm">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Tiêu đề trang</label>
+                    <input type="text" id="introTitle" placeholder="Ví dụ: Về Chúng Tôi - Xưởng In Sắc Màu" required>
+                </div>
+                
+                <div class="form-group full-width" style="margin-bottom: 20px;">
+                    <label>Nội dung bài viết (Hỗ trợ mã HTML để in đậm, xuống dòng...)</label>
+                    <textarea id="introContent" rows="8" placeholder="Viết câu chuyện thương hiệu của sếp vào đây..."></textarea>
+                </div>
+                
+                <div class="form-group full-width" style="margin-bottom: 20px;">
+                    <label>Thư viện Slide Hình Ảnh (Có thể chọn nhiều ảnh cùng lúc)</label>
+                    <input type="file" id="introGallery" accept="image/*" multiple>
+                    <div id="intro-gallery-preview" style="display:flex; gap:12px; margin-top:15px; flex-wrap:wrap;"></div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Khung Thông Tin Liên Hệ</label>
+                        <textarea id="introContact" rows="5" placeholder="Địa chỉ: ...&#10;Hotline: ...&#10;Email: ..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Mã nhúng Bản Đồ (Google Maps Iframe)</label>
+                        <textarea id="introMap" rows="5" placeholder='Dán thẻ <iframe src="..."> lấy từ Google Maps vào đây'></textarea>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn-submit" id="btnSaveIntro" onclick="saveIntroData()">LƯU CẤU HÌNH TRANG GIỚI THIỆU</button>
+            </form>
+        </div>
         <div id="tab-contact" class="panel"><h3>Quản lý trang Liên Hệ</h3></div>
 
     </main>
