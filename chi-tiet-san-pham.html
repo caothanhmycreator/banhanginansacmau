@@ -23,16 +23,23 @@
                 <div class="main-image" id="sp-image"></div>
                 <div class="gallery-thumbnails" id="sp-gallery-thumbs"></div>
                 
-                <div class="specs-box" style="margin-top: 30px;">
+                <div class="title-price-wrapper">
+                    <h1 id="sp-name">Tên sản phẩm</h1>
+                    <div class="product-price" id="sp-price">0 đ</div>
+                </div>
+
+                <div class="desc-highlight-box">
+                    <h3>Mô tả tóm tắt</h3>
+                    <div class="desc-content" id="sp-short-desc">Đang cập nhật mô tả...</div>
+                </div>
+                
+                <div class="specs-box">
                     <h3>Thông Số Cơ Bản</h3>
                     <ul class="specs-list" id="sp-specs"></ul>
                 </div>
             </div>
             
             <div class="product-info">
-                <h1 id="sp-name">Tên sản phẩm</h1>
-                <div class="product-price" id="sp-price">0 đ</div>
-
                 <div class="order-form">
                     <h3>Tùy Chọn Đặt Hàng Của Bạn</h3>
                     
@@ -99,52 +106,5 @@
     <script src="js/api.js"></script>
     <script src="js/frontend.js"></script>
     
-    <script>
-        // --- NÂNG CẤP: LOGIC AUTO-SLIDE HÌNH ẢNH ---
-        let autoSlideTimer;
-
-        // Hàm đổi ảnh chính
-        function changeMainImage(url, thumbElement) {
-            document.getElementById('sp-image').style.backgroundImage = `url('${url}')`;
-            
-            document.querySelectorAll('.thumb-img').forEach(el => el.classList.remove('active'));
-            if(thumbElement) thumbElement.classList.add('active');
-            
-            // Khởi động lại bộ đếm giờ nếu khách vừa bấm
-            resetAutoSlide();
-        }
-
-        // Logic đếm giờ trượt ảnh
-        function resetAutoSlide() {
-            clearInterval(autoSlideTimer);
-            autoSlideTimer = setInterval(() => {
-                const thumbs = Array.from(document.querySelectorAll('.thumb-img'));
-                if (thumbs.length > 1) {
-                    // Tìm vị trí ảnh đang sáng
-                    let activeIdx = thumbs.findIndex(t => t.classList.contains('active'));
-                    // Nhảy sang ảnh tiếp theo, nếu đến cuối thì vòng lại 0
-                    let nextIdx = (activeIdx + 1) % thumbs.length;
-                    
-                    // Lấy link ảnh từ background-image của ảnh thu nhỏ tiếp theo
-                    let nextBg = thumbs[nextIdx].style.backgroundImage;
-                    let url = nextBg.replace(/^url\(["']?/, '').replace(/["']?\)$/, ''); 
-                    
-                    changeMainImage(url, thumbs[nextIdx]);
-                }
-            }, 3000); // 3000ms = 3 giây đổi ảnh 1 lần
-        }
-
-        // Kích hoạt Auto-slide sau khi trang tải xong (Đợi 2 giây cho API bơm ảnh)
-        setTimeout(resetAutoSlide, 2000);
-
-        // Tạm dừng trượt khi khách di chuột vào khu vực ảnh
-        document.querySelector('.product-gallery').addEventListener('mouseenter', () => clearInterval(autoSlideTimer));
-        document.querySelector('.product-gallery').addEventListener('mouseleave', resetAutoSlide);
-        // ------------------------------------------
-
-        // Logic Mở/Đóng Popup Đặt Hàng
-        function openOrderModal() { document.getElementById('orderModal').style.display = 'flex'; }
-        function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
-    </script>
 </body>
 </html>
