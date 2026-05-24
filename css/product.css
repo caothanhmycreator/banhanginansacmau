@@ -1,6 +1,6 @@
 /* --- CSS RIÊNG CHO TRANG CHI TIẾT SẢN PHẨM --- */
 
-.product-container { max-width: 1200px; margin: 120px auto 50px; padding: 0 20px; display: flex; gap: 50px; }
+.product-container { max-width: 1200px; margin: 120px auto 20px; padding: 0 20px; display: flex; gap: 50px; }
 .product-gallery { flex: 1; min-width: 0; } /* min-width: 0 giúp ảnh không bao giờ tràn khung */
 
 /* Hiển thị ảnh chính */
