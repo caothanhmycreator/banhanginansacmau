@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giới Thiệu - In Ấn Sắc Màu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/gioi-thieu.css">
+</head>
+<body>
+
+    <header id="dynamic-header"></header>
+
+    <div id="loading" style="text-align:center; padding: 150px; color: var(--accent-glow); font-weight:bold; font-size: 18px;">
+        Đang tải thông tin...
+    </div>
+
+    <main id="intro-wrapper" style="display: none;">
+        <section class="intro-hero">
+            <h1 id="intro-title">VỀ CHÚNG TÔI</h1>
+            
+            <div class="intro-slider-container">
+                <div class="intro-slider" id="intro-slider">
+                    </div>
+            </div>
+        </section>
+
+        <section class="intro-content-section">
+            <div class="glossy-box">
+                <div id="intro-content">
+                    </div>
+            </div>
+        </section>
+
+        <section class="intro-contact-map">
+            <div class="contact-box glossy-box">
+                <h3 style="color: var(--accent-glow); margin-top: 0; font-size: 20px;">THÔNG TIN LIÊN HỆ</h3>
+                <div id="intro-contact" style="white-space: pre-line; line-height: 1.8; color: #cbd5e1;">
+                    </div>
+            </div>
+            
+            <div class="map-box glossy-box">
+                <div id="intro-map" class="map-container">
+                    </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="dynamic-footer"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/components.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/gioi-thieu.js"></script>
+</body>
+</html>
