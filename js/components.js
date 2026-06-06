@@ -11,10 +11,17 @@ const MENU_DATA = [
                 url: 'san-pham.html?cat=in-an',
                 children: [
                     { label: 'Thiệp cưới', url: 'san-pham.html?sub=thiep-cuoi' },
-                    { label: 'Thiệp sinh nhật', url: 'san-pham.html?sub=thiep-sinh-nhat' },
+                    { label: 'Thiệp sinh nhật', url: 'san-pham.html?sub=thiep-sinh-nhat'},
+                    { label: 'Thiệp tân gia', url: 'san-pham.html?sub=thiep-tan-gia' },
                     { label: 'Name card', url: 'san-pham.html?sub=name-card' },
                     { label: 'Bìa folder', url: 'san-pham.html?sub=bia-folder' },
-                    { label: 'Tờ rơi', url: 'san-pham.html?sub=to-roi' }
+                    { label: 'Tờ rơi', url: 'san-pham.html?sub=to-roi' },
+                    { label: 'Hóa đơn', url: 'san-pham.html?sub=hoa-don' },
+                    { label: 'Áo', url: 'san-pham.html?sub=ao' },
+                    { label: 'Tem nhãn', url: 'san-pham.html?sub=tem' },
+                    { label: 'Menu', url: 'san-pham.html?sub=menu' },
+                    { label: 'Bảng tên', url: 'san-pham.html?sub=bang-ten' },
+
                 ]
             },
             { 
