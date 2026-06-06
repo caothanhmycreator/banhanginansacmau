@@ -11,6 +11,7 @@ const MENU_DATA = [
                 url: 'san-pham.html?cat=in-an',
                 children: [
                     { label: 'Thiệp cưới', url: 'san-pham.html?sub=thiep-cuoi' },
+                    { label: 'Thiệp sinh nhật', url: 'san-pham.html?sub=thiep-sinh-nhat' },
                     { label: 'Name card', url: 'san-pham.html?sub=name-card' },
                     { label: 'Bìa folder', url: 'san-pham.html?sub=bia-folder' },
                     { label: 'Tờ rơi', url: 'san-pham.html?sub=to-roi' }

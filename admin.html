@@ -25,6 +25,7 @@
     <main>
         
         <div id="tab-products" class="panel active">
+            
             <h3>Đăng Sản Phẩm Cao Cấp</h3>
             <form id="productForm">
                 <input type="hidden" id="prodId" value="">
@@ -85,12 +86,15 @@
                     </div>
                 </div>
                 <button type="button" class="btn-submit" id="submitBtn" onclick="processSubmitProduct()">Lưu và phát hành sản phẩm</button>
-                
-                <button type="button" id="cancelEditBtn" onclick="exitEditMode()" style="display: none; background: #334155; color: #fff; border: none; padding: 15px 40px; font-size: 15px; font-weight: 700; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; width: 100%; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">Hủy chế độ sửa</button>
             </form>
 
             <div style="margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 40px;">
-                <h3 style="font-size: 22px; margin-top: 0; margin-bottom: 20px; font-weight: 800;">Danh Sách Sản Phẩm Hiện Có</h3>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <h3 style="font-size: 22px; margin: 0; font-weight: 800;">Danh Sách Sản Phẩm Hiện Có</h3>
+                    <input type="text" id="searchProductInput" onkeyup="filterProducts()" placeholder="🔍 Tìm tên hoặc mã sản phẩm..." style="width: 100%; max-width: 350px; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: #fff;">
+                </div>
+
                 <div style="overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border-color);">
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
                         <thead>
@@ -103,9 +107,11 @@
                             </tr>
                         </thead>
                         <tbody id="admin-product-list">
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
+
+                <div id="productPagination" style="display: flex; justify-content: center; gap: 8px; margin-top: 25px;"></div>
             </div>
         </div>
 
@@ -141,18 +147,15 @@
                     <label>Tiêu đề trang</label>
                     <input type="text" id="introTitle" placeholder="Ví dụ: Về Chúng Tôi - Xưởng In Sắc Màu" required>
                 </div>
-                
                 <div class="form-group full-width" style="margin-bottom: 20px;">
                     <label>Nội dung bài viết (Hỗ trợ mã HTML để in đậm, xuống dòng...)</label>
-                    <textarea id="introContent" rows="8" placeholder="Viết câu chuyện thương hiệu vào đây..."></textarea>
+                    <textarea id="introContent" rows="8" placeholder="Viết câu chuyện thương hiệu của sếp vào đây..."></textarea>
                 </div>
-                
                 <div class="form-group full-width" style="margin-bottom: 20px;">
                     <label>Thư viện Slide Hình Ảnh (Có thể chọn nhiều ảnh cùng lúc)</label>
                     <input type="file" id="introGallery" accept="image/*" multiple>
                     <div id="intro-gallery-preview" style="display:flex; gap:12px; margin-top:15px; flex-wrap:wrap;"></div>
                 </div>
-
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Khung Thông Tin Liên Hệ</label>
@@ -163,13 +166,71 @@
                         <textarea id="introMap" rows="5" placeholder='Dán thẻ <iframe src="..."> lấy từ Google Maps vào đây'></textarea>
                     </div>
                 </div>
-                
                 <button type="button" class="btn-submit" id="btnSaveIntro" onclick="saveIntroData()">LƯU CẤU HÌNH TRANG GIỚI THIỆU</button>
             </form>
         </div>
+        
         <div id="tab-contact" class="panel"><h3>Quản lý trang Liên Hệ</h3></div>
 
     </main>
+
+    <div class="modal-overlay" id="editProductModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div class="modal-content" style="background: var(--bg-admin); border: 1px solid var(--primary); padding: 35px; border-radius: 16px; width: 95%; max-width: 1050px; max-height: 85vh; overflow-y: auto; position: relative;">
+            <span class="close-modal" onclick="document.getElementById('editProductModal').style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; color: #94a3b8; cursor: pointer;">&times;</span>
+            <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; font-size: 20px;">Cập Nhật Thông Tin Sản Phẩm</h3>
+            
+            <form id="editProductForm">
+                <input type="hidden" id="editProdId" value="">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tên sản phẩm</label>
+                        <input type="text" id="editProdName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mã ID tùy chỉnh (Slug viết liền không dấu - KO TRÙNG)</label>
+                        <input type="text" id="editProdSlug" required placeholder="Ví dụ: bia-folder-a4-moi">
+                    </div>
+                    <div class="form-group">
+                        <label>Giá hiển thị cơ bản (VNĐ)</label>
+                        <input type="number" id="editProdPrice" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ảnh đại diện (Để trống nếu giữ nguyên ảnh cũ)</label>
+                        <input type="file" id="editProdImage" accept="image/*">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label>Thư viện ảnh (Để trống nếu giữ nguyên kho ảnh cũ)</label>
+                        <input type="file" id="editProdGallery" accept="image/*" multiple> 
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label>Mô tả tóm tắt ngắn</label>
+                        <textarea id="editProdDesc" rows="2" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Thông số kỹ thuật</label>
+                        <div id="edit-specs-container"></div>
+                        <button type="button" class="btn-add" onclick="addEditSpecRow()">+ Thêm Dòng Thông Số</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bảng phân loại giá theo số lượng</label>
+                        <div id="edit-tiers-container"></div>
+                        <button type="button" class="btn-add" onclick="addEditTierRow()">+ Thêm Gói Giá</button>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Bài viết chi tiết sản phẩm (Hỗ trợ HTML)</label>
+                        <textarea id="editProdContent" rows="8"></textarea>
+                    </div>
+                </div>
+                <button type="button" class="btn-submit" id="btnUpdateProduct" onclick="processUpdateProduct()">LƯU THAY ĐỔI</button>
+            </form>
+        </div>
+    </div>
 
     <div class="modal-overlay" id="editOrderModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
         <div class="modal-content" style="background: var(--bg-admin); border: 1px solid var(--primary); padding: 35px; border-radius: 16px; width: 90%; max-width: 500px; position: relative;">
@@ -194,9 +255,8 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/api.js"></script>
     <script src="js/admin.js"></script>
 
