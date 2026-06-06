@@ -1,4 +1,36 @@
-// 1. Hàm điều khiển chuyển đổi Tabs mượt mà trên Sidebar
+// ==========================================
+// CẤU HÌNH GIAO DIỆN SWEETALERT2 (TÔNG TỐI)
+// ==========================================
+const showAlert = (title, text, icon) => {
+    return Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        background: '#1e293b',
+        color: '#fff',
+        confirmButtonColor: '#E65100'
+    });
+};
+
+const showConfirm = (title, text) => {
+    return Swal.fire({
+        title: title,
+        text: text,
+        icon: 'warning',
+        showCancelButton: true,
+        background: '#1e293b',
+        color: '#fff',
+        confirmButtonColor: '#dc2626', // Màu đỏ cảnh báo xóa
+        cancelButtonColor: '#475569',
+        confirmButtonText: 'Đồng ý xóa',
+        cancelButtonText: 'Hủy'
+    });
+};
+
+// ==========================================
+// QUẢN LÝ SẢN PHẨM
+// ==========================================
+
 function switchTab(tabId, element) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -7,7 +39,6 @@ function switchTab(tabId, element) {
     element.classList.add('active');
 }
 
-// 2. Logic thêm dòng Thông số kỹ thuật động
 function addSpecRow() {
     const container = document.getElementById('specs-container');
     const div = document.createElement('div');
@@ -20,7 +51,6 @@ function addSpecRow() {
     container.appendChild(div);
 }
 
-// 3. Logic thêm dòng Gói giá động
 function addTierRow() {
     const container = document.getElementById('tiers-container');
     const div = document.createElement('div');
@@ -33,7 +63,6 @@ function addTierRow() {
     container.appendChild(div);
 }
 
-// Hàm tải danh sách sản phẩm hiển thị lên bảng quản trị
 async function loadAdminProductList() {
     const tbody = document.getElementById('admin-product-list');
     if (!tbody) return;
@@ -63,24 +92,27 @@ async function loadAdminProductList() {
     tbody.innerHTML = rowsHTML;
 }
 
-// MỚI: Hàm xử lý xóa vĩnh viễn sản phẩm
 async function deleteProductAction(id) {
-    if (!confirm("⚠️ Sếp có chắc chắn muốn XÓA VĨNH VIỄN sản phẩm này không? Khi xóa xong, khách hàng bên ngoài sẽ không xem được thông tin mẫu in này nữa!")) return;
+    const result = await showConfirm(
+        "Xóa vĩnh viễn?", 
+        "Sếp có chắc chắn muốn XÓA VĨNH VIỄN sản phẩm này không? Dữ liệu không thể khôi phục!"
+    );
+    
+    if (!result.isConfirmed) return;
     
     const success = await API.deleteProduct(id);
     if (success) {
-        alert("🎉 Đã xóa sản phẩm ra khỏi hệ thống thành công!");
-        loadAdminProductList(); // Nạp lại bảng dữ liệu mới
+        Swal.fire({ title: "Đã xóa!", text: "Sản phẩm đã bị gỡ khỏi hệ thống.", icon: "success", background: '#1e293b', color: '#fff', timer: 2000, showConfirmButton: false });
+        loadAdminProductList(); 
     } else {
-        alert("Lỗi hệ thống, không xóa được sản phẩm!");
+        showAlert("Lỗi!", "Hệ thống không xóa được sản phẩm!", "error");
     }
 }
 
-// Hàm bốc dữ liệu sản phẩm đổ ngược lại vào Form để sửa
 async function prepareEditProduct(slug) {
     const product = await API.getProductBySlug(slug);
     if (!product) {
-        alert("Không tìm thấy dữ liệu sản phẩm!");
+        showAlert("Lỗi!", "Không tìm thấy dữ liệu sản phẩm!", "error");
         return;
     }
 
@@ -132,7 +164,6 @@ async function prepareEditProduct(slug) {
     document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
 }
 
-// Hàm thoát khỏi chế độ sửa, đưa form về trạng thái đăng mới
 function exitEditMode() {
     document.getElementById('productForm').reset();
     document.getElementById('prodId').value = '';
@@ -144,7 +175,6 @@ function exitEditMode() {
     document.getElementById('tiers-container').innerHTML = '<div class="dynamic-row"><input type="text" class="tier-label" placeholder="Gói (VD: In 200 cái)"><input type="number" class="tier-price" placeholder="Giá tiền lẻ từng cái"></div>';
 }
 
-// 4. HÀM TỔNG QUẢN XỬ LÝ LƯU SẢN PHẨM 
 async function processSubmitProduct() {
     const btn = document.getElementById('submitBtn');
     
@@ -158,12 +188,12 @@ async function processSubmitProduct() {
     const galleryFiles = document.getElementById('prodGallery').files; 
 
     if (!name || !slug || !price || !desc) {
-        alert("Sếp ơi, vui lòng điền đầy đủ các mục bắt buộc nhé!");
+        showAlert("Thiếu thông tin", "Sếp ơi, vui lòng điền đầy đủ các mục bắt buộc nhé!", "warning");
         return;
     }
 
     if (!id && !imageFile) {
-        alert("Sếp vui lòng chọn ảnh đại diện cho sản phẩm mới nhé!");
+        showAlert("Thiếu ảnh", "Sếp vui lòng chọn ảnh đại diện cho sản phẩm mới nhé!", "warning");
         return;
     }
 
@@ -179,7 +209,7 @@ async function processSubmitProduct() {
                 .maybeSingle();
 
             if (existingProd) {
-                alert(`❌ Lỗi rồi sếp ơi! Mã ID "${slug}" này đã được dùng cho sản phẩm khác rồi. Sếp vui lòng đặt tên mã khác nhé!`);
+                showAlert("Trùng mã ID", `❌ Lỗi rồi sếp ơi! Mã ID "${slug}" này đã được dùng cho sản phẩm khác rồi. Sếp vui lòng đặt tên mã khác nhé!`, "error");
                 btn.innerText = "LƯU VÀ PHÁT HÀNH SẢN PHẨM";
                 btn.disabled = false;
                 return;
@@ -242,16 +272,21 @@ async function processSubmitProduct() {
         const { error } = await API.saveProduct(finalPayload);
 
         if (error) {
-            alert("Lỗi hệ thống: " + error.message);
+            showAlert("Lỗi hệ thống", error.message, "error");
         } else {
-            alert(id ? "🎉 Cập nhật thông tin sản phẩm thành công!" : "🎉 Phát hành sản phẩm mới thành công!");
+            Swal.fire({
+                title: "Thành công!",
+                text: id ? "Cập nhật thông tin sản phẩm thành công!" : "Phát hành sản phẩm mới thành công!",
+                icon: "success",
+                background: '#1e293b', color: '#fff', confirmButtonColor: '#E65100'
+            });
             exitEditMode(); 
             loadAdminProductList(); 
         }
 
     } catch (err) {
         console.error(err);
-        alert("Có lỗi phát sinh trong quá trình xử lý!");
+        showAlert("Lỗi!", "Có lỗi phát sinh trong quá trình xử lý!", "error");
     }
 
     btn.disabled = false;
@@ -267,7 +302,7 @@ async function loadAdminOrderList() {
 
     const orders = await API.getOrders();
     if (!orders || orders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="padding: 20px; text-align: center; color: #94a3b8;">Chưa có đơn hàng nào. Gửi link cho khách vào test thử thôi sếp ơi!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="padding: 20px; text-align: center; color: #94a3b8;">Chưa có đơn hàng nào.</td></tr>`;
         return;
     }
 
@@ -300,8 +335,8 @@ async function loadAdminOrderList() {
                     </span>
                 </td>
                 <td style="padding: 15px 20px; text-align: right;">
-                    <button type="button" onclick="prepareEditOrder('${order.id}', '${order.customer_name.replace(/'/g, "\\'")}', '${order.customer_phone.replace(/'/g, "\\'")}', '${adminNote.replace(/'/g, "\\'")}')" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.1); padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; margin-bottom: 8px; width: 100%; transition: 0.2s;">Sửa thông tin</button>
-                    <button type="button" onclick="deleteOrderAction('${order.id}')" style="background:#7f1d1d; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; width: 100%; transition: 0.2s;">Xóa Đơn</button>
+                    <button type="button" onclick="prepareEditOrder('${order.id}', '${order.customer_name.replace(/'/g, "\\'")}', '${order.customer_phone.replace(/'/g, "\\'")}', '${adminNote.replace(/'/g, "\\'")}')" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.1); padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; margin-bottom: 8px; width: 100%; transition: 0.2s;">Sửa</button>
+                    <button type="button" onclick="deleteOrderAction('${order.id}')" style="background:#7f1d1d; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; width: 100%; transition: 0.2s;">Xóa</button>
                 </td>
             </tr>
         `;
@@ -315,7 +350,7 @@ async function toggleOrderStatus(id, currentStatus) {
     if (result.success) {
         loadAdminOrderList(); 
     } else {
-        alert("Lỗi kết nối, chưa đổi được trạng thái!");
+        showAlert("Lỗi!", "Lỗi kết nối, chưa đổi được trạng thái!", "error");
     }
 }
 
@@ -335,7 +370,7 @@ async function processUpdateOrder() {
     const adminNote = document.getElementById('editOrderAdminNote').value.trim();
 
     if (!name || !phone) {
-        alert("Không được để trống tên và số điện thoại khách hàng sếp ơi!");
+        showAlert("Thiếu thông tin", "Không được để trống tên và số điện thoại khách hàng sếp ơi!", "warning");
         return;
     }
 
@@ -353,7 +388,7 @@ async function processUpdateOrder() {
         document.getElementById('editOrderModal').style.display = 'none';
         loadAdminOrderList(); 
     } else {
-        alert("Có lỗi xảy ra khi lưu thay đổi!");
+        showAlert("Lỗi!", "Có lỗi xảy ra khi lưu thay đổi!", "error");
     }
 
     btn.innerText = "LƯU THAY ĐỔI";
@@ -361,13 +396,18 @@ async function processUpdateOrder() {
 }
 
 async function deleteOrderAction(id) {
-    if (!confirm("⚠️ Sếp có chắc chắn muốn XÓA VĨNH VIỄN đơn đặt hàng này không? Dữ liệu sẽ không thể khôi phục!")) return;
+    const result = await showConfirm(
+        "Xóa đơn hàng?", 
+        "⚠️ Sếp có chắc chắn muốn XÓA VĨNH VIỄN đơn đặt hàng này không? Dữ liệu sẽ không thể khôi phục!"
+    );
+    
+    if (!result.isConfirmed) return;
     
     const success = await API.deleteOrder(id);
     if (success) {
         loadAdminOrderList();
     } else {
-        alert("Lỗi hệ thống khi xóa đơn hàng!");
+        showAlert("Lỗi!", "Lỗi hệ thống khi xóa đơn hàng!", "error");
     }
 }
 
@@ -445,16 +485,21 @@ async function saveIntroData() {
         const success = await API.updateSettings('page_intro', JSON.stringify(payload));
 
         if (success) {
-            alert("🎉 Đã lưu cấu hình trang Giới Thiệu thành công!");
+            Swal.fire({
+                title: "Thành công!",
+                text: "Đã lưu cấu hình trang Giới Thiệu thành công!",
+                icon: "success",
+                background: '#1e293b', color: '#fff', confirmButtonColor: '#E65100'
+            });
             existingIntroGallery = finalGallery;
             renderIntroGalleryPreview();
             document.getElementById('introGallery').value = ""; 
         } else {
-            alert("Lỗi kết nối khi lưu dữ liệu!");
+            showAlert("Lỗi!", "Lỗi kết nối khi lưu dữ liệu!", "error");
         }
     } catch (err) {
         console.error(err);
-        alert("Lỗi phát sinh trong quá trình lưu!");
+        showAlert("Lỗi!", "Lỗi phát sinh trong quá trình lưu!", "error");
     }
 
     btn.innerText = "LƯU CẤU HÌNH TRANG GIỚI THIỆU";
