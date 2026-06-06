@@ -38,3 +38,37 @@ input:focus, textarea:focus { border-color: var(--accent); outline: none; backgr
 
 .btn-submit { background: var(--accent); color: #fff; border: none; padding: 15px 40px; font-size: 15px; font-weight: 700; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; width: 100%; margin-top: 20px; box-shadow: 0 4px 15px rgba(230, 81, 0, 0.3); }
 .btn-submit:hover { background: #ff6d00; }
+/* ==========================================
+   TÙY CHỈNH THANH CUỘN (SCROLLBAR) SIÊU MƯỢT
+   ================================================ */
+
+/* 1. Thu nhỏ kích thước thanh cuộn (dọc và ngang) */
+::-webkit-scrollbar {
+    width: 6px;  /* Chiều ngang của thanh cuộn dọc */
+    height: 6px; /* Chiều cao của thanh cuộn ngang */
+}
+
+/* 2. Làm tàng hình rãnh trượt (Track) */
+::-webkit-scrollbar-track {
+    background: transparent; 
+    border-radius: 10px;
+}
+
+/* 3. Trang trí cục trượt (Thumb) nhỏ gọn, tinh tế */
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15); /* Màu xám mờ tiệp với nền tối */
+    border-radius: 10px;
+}
+
+/* 4. Hiệu ứng phát sáng khi người dùng di chuột vào cục trượt */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent); /* Sáng lên màu cam thương hiệu */
+}
+
+/* 5. (Tùy chọn) Ẩn hoàn toàn thanh cuộn nhưng vẫn cho phép cuộn */
+/* Nếu sếp muốn ẩn sạch 100% thì bỏ ghi chú 2 dòng dưới đây: */
+/*
+::-webkit-scrollbar {
+    display: none; 
+}
+*/
