@@ -53,13 +53,27 @@ async function loadAdminProductList() {
                 <td style="padding: 15px 20px; font-weight:600; color:#fff;">${prod.name}</td>
                 <td style="padding: 15px 20px; color:#94a3b8; font-family:monospace;">${prod.slug}</td>
                 <td style="padding: 15px 20px; color:var(--accent-glow); font-weight:700;">${formattedPrice}</td>
-                <td style="padding: 15px 20px; text-align: right;">
-                    <button type="button" onclick="prepareEditProduct('${prod.slug}')" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.1); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px;">Sửa</button>
+                <td style="padding: 15px 20px; text-align: right; white-space: nowrap;">
+                    <button type="button" onclick="prepareEditProduct('${prod.slug}')" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.1); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; margin-right:5px;">Sửa</button>
+                    <button type="button" onclick="deleteProductAction('${prod.id}')" style="background:#7f1d1d; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px;">Xóa</button>
                 </td>
             </tr>
         `;
     });
     tbody.innerHTML = rowsHTML;
+}
+
+// MỚI: Hàm xử lý xóa vĩnh viễn sản phẩm
+async function deleteProductAction(id) {
+    if (!confirm("⚠️ Sếp có chắc chắn muốn XÓA VĨNH VIỄN sản phẩm này không? Khi xóa xong, khách hàng bên ngoài sẽ không xem được thông tin mẫu in này nữa!")) return;
+    
+    const success = await API.deleteProduct(id);
+    if (success) {
+        alert("🎉 Đã xóa sản phẩm ra khỏi hệ thống thành công!");
+        loadAdminProductList(); // Nạp lại bảng dữ liệu mới
+    } else {
+        alert("Lỗi hệ thống, không xóa được sản phẩm!");
+    }
 }
 
 // Hàm bốc dữ liệu sản phẩm đổ ngược lại vào Form để sửa
@@ -241,13 +255,12 @@ async function processSubmitProduct() {
     }
 
     btn.disabled = false;
-};
+}
 
 // ==========================================
-// MỚI NÂNG CẤP: BỘ NÃO QUẢN LÝ ĐƠN HÀNG
+// BỘ NÃO QUẢN LÝ ĐƠN HÀNG
 // ==========================================
 
-// Tải danh sách đơn hàng đổ vào bảng
 async function loadAdminOrderList() {
     const tbody = document.getElementById('admin-order-list');
     if (!tbody) return;
@@ -260,11 +273,9 @@ async function loadAdminOrderList() {
 
     let rowsHTML = '';
     orders.forEach(order => {
-        // Xử lý ngày giờ
         const dateObj = new Date(order.created_at);
         const formattedDate = dateObj.toLocaleDateString('vi-VN') + ' - ' + dateObj.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
         
-        // Xử lý trạng thái hiển thị
         const status = order.status || 'Chờ xử lý'; 
         const statusColor = status === 'Đã xử lý' ? '#4ade80' : '#facc15';
         const adminNote = order.admin_note || '';
@@ -298,18 +309,16 @@ async function loadAdminOrderList() {
     tbody.innerHTML = rowsHTML;
 }
 
-// Bấm vào nút Trạng thái để đổi nhanh từ Chờ -> Đã xử lý
 async function toggleOrderStatus(id, currentStatus) {
     const newStatus = currentStatus === 'Đã xử lý' ? 'Chờ xử lý' : 'Đã xử lý';
     const result = await API.updateOrder(id, { status: newStatus });
     if (result.success) {
-        loadAdminOrderList(); // Tải lại bảng để thấy màu đổi ngay
+        loadAdminOrderList(); 
     } else {
         alert("Lỗi kết nối, chưa đổi được trạng thái!");
     }
 }
 
-// Bốc dữ liệu lên form Popup để Admin sửa
 function prepareEditOrder(id, name, phone, adminNote) {
     document.getElementById('editOrderId').value = id;
     document.getElementById('editOrderName').value = name;
@@ -319,7 +328,6 @@ function prepareEditOrder(id, name, phone, adminNote) {
     document.getElementById('editOrderModal').style.display = 'flex';
 }
 
-// Ghi dữ liệu sửa đổi xuống Database
 async function processUpdateOrder() {
     const id = document.getElementById('editOrderId').value;
     const name = document.getElementById('editOrderName').value.trim();
@@ -352,7 +360,6 @@ async function processUpdateOrder() {
     btn.disabled = false;
 }
 
-// Xóa vĩnh viễn đơn hàng
 async function deleteOrderAction(id) {
     if (!confirm("⚠️ Sếp có chắc chắn muốn XÓA VĨNH VIỄN đơn đặt hàng này không? Dữ liệu sẽ không thể khôi phục!")) return;
     
@@ -363,13 +370,13 @@ async function deleteOrderAction(id) {
         alert("Lỗi hệ thống khi xóa đơn hàng!");
     }
 }
+
 // ==========================================
-// MỚI NÂNG CẤP: BỘ NÃO QUẢN LÝ TRANG GIỚI THIỆU
+// BỘ NÃO QUẢN LÝ TRANG GIỚI THIỆU
 // ==========================================
 
-let existingIntroGallery = []; // Mảng lưu trữ các link ảnh slide hiện tại
+let existingIntroGallery = []; 
 
-// 1. Tải dữ liệu Giới thiệu từ Database
 async function loadIntroData() {
     const data = await API.getSettings('page_intro');
     if (data) {
@@ -388,9 +395,9 @@ async function loadIntroData() {
     }
 }
 
-// 2. Hiển thị ảnh cũ để sếp xem và xóa
 function renderIntroGalleryPreview() {
     const container = document.getElementById('intro-gallery-preview');
+    if(!container) return;
     container.innerHTML = '';
     existingIntroGallery.forEach((url, index) => {
         container.innerHTML += `
@@ -402,13 +409,11 @@ function renderIntroGalleryPreview() {
     });
 }
 
-// 3. Hàm xóa bớt ảnh cũ
 function removeIntroImage(index) {
     existingIntroGallery.splice(index, 1);
     renderIntroGalleryPreview();
 }
 
-// 4. Lưu lại toàn bộ trang Giới Thiệu
 async function saveIntroData() {
     const btn = document.getElementById('btnSaveIntro');
     btn.innerText = "ĐANG XỬ LÝ DỮ LIỆU...";
@@ -418,7 +423,6 @@ async function saveIntroData() {
         const files = document.getElementById('introGallery').files;
         let newUrls = [];
 
-        // Nếu sếp có chọn ảnh mới thì up lên mây trước
         if (files.length > 0) {
             for (let i = 0; i < files.length; i++) {
                 btn.innerText = `ĐANG TẢI ẢNH SLIDE (${i+1}/${files.length})...`;
@@ -427,10 +431,8 @@ async function saveIntroData() {
             }
         }
 
-        // Gom ảnh cũ còn lại + ảnh mới up thành 1 mảng Slide hoàn chỉnh
         const finalGallery = [...existingIntroGallery, ...newUrls];
 
-        // Đóng gói tất cả vào 1 cục JSON
         const payload = {
             title: document.getElementById('introTitle').value.trim(),
             content: document.getElementById('introContent').value.trim(),
@@ -440,14 +442,13 @@ async function saveIntroData() {
         };
 
         btn.innerText = "ĐANG GHI VÀO CƠ SỞ DỮ LIỆU...";
-        // Gọi hàm updateSettings lưu vào bảng app_settings với key là 'page_intro'
         const success = await API.updateSettings('page_intro', JSON.stringify(payload));
 
         if (success) {
             alert("🎉 Đã lưu cấu hình trang Giới Thiệu thành công!");
             existingIntroGallery = finalGallery;
             renderIntroGalleryPreview();
-            document.getElementById('introGallery').value = ""; // Xóa trắng ô chọn file
+            document.getElementById('introGallery').value = ""; 
         } else {
             alert("Lỗi kết nối khi lưu dữ liệu!");
         }
@@ -460,9 +461,9 @@ async function saveIntroData() {
     btn.disabled = false;
 }
 
-// Tự động kích hoạt nạp danh sách Sản Phẩm VÀ Đơn Hàng ngay khi mở trang quản trị
+// Khởi động đồng bộ hệ thống quản trị
 document.addEventListener('DOMContentLoaded', () => {
     loadAdminProductList();
     loadAdminOrderList(); 
-    loadIntroData(); // <-- Thêm dòng này vào
+    loadIntroData(); 
 });

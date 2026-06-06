@@ -136,6 +136,18 @@ const API = {
             return [];
         }
         return data;
+    },
+// MỚI: Xóa vĩnh viễn sản phẩm khỏi hệ thống
+    async deleteProduct(id) {
+        const { error } = await supabaseClient
+            .from('products')
+            .delete()
+            .eq('id', id);
+            
+        if (error) {
+            console.error('Lỗi xóa sản phẩm:', error);
+            return false;
+        }
+        return true;
     }
-
 }; // Đóng const API
