@@ -37,6 +37,6 @@ async function processFinalOrder() {
     };
     
     await API.submitOrder(payload);
-    alert("Cảm ơn sếp! Đơn vị sẽ liên hệ ngay.");
+    alert("Cảm ơn bạn! Đơn vị sẽ liên hệ ngay.");
     closeOrderModal();
 }

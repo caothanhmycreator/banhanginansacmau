@@ -95,7 +95,7 @@ async function loadAdminProductList() {
 async function deleteProductAction(id) {
     const result = await showConfirm(
         "Xóa vĩnh viễn?", 
-        "Sếp có chắc chắn muốn XÓA VĨNH VIỄN sản phẩm này không? Dữ liệu không thể khôi phục!"
+        "Bạn có chắc chắn muốn XÓA VĨNH VIỄN sản phẩm này không? Dữ liệu không thể khôi phục!"
     );
     
     if (!result.isConfirmed) return;
@@ -188,12 +188,12 @@ async function processSubmitProduct() {
     const galleryFiles = document.getElementById('prodGallery').files; 
 
     if (!name || !slug || !price || !desc) {
-        showAlert("Thiếu thông tin", "Sếp ơi, vui lòng điền đầy đủ các mục bắt buộc nhé!", "warning");
+        showAlert("Thiếu thông tin", "Vui lòng điền đầy đủ các mục bắt buộc nhé!", "warning");
         return;
     }
 
     if (!id && !imageFile) {
-        showAlert("Thiếu ảnh", "Sếp vui lòng chọn ảnh đại diện cho sản phẩm mới nhé!", "warning");
+        showAlert("Thiếu ảnh", "Vui lòng chọn ảnh đại diện cho sản phẩm mới nhé!", "warning");
         return;
     }
 
@@ -209,7 +209,7 @@ async function processSubmitProduct() {
                 .maybeSingle();
 
             if (existingProd) {
-                showAlert("Trùng mã ID", `❌ Lỗi rồi sếp ơi! Mã ID "${slug}" này đã được dùng cho sản phẩm khác rồi. Sếp vui lòng đặt tên mã khác nhé!`, "error");
+                showAlert("Trùng mã ID", `❌ Lỗi! Mã ID "${slug}" này đã được dùng cho sản phẩm khác rồi. Vui lòng đặt tên mã khác nhé!`, "error");
                 btn.innerText = "LƯU VÀ PHÁT HÀNH SẢN PHẨM";
                 btn.disabled = false;
                 return;
@@ -370,7 +370,7 @@ async function processUpdateOrder() {
     const adminNote = document.getElementById('editOrderAdminNote').value.trim();
 
     if (!name || !phone) {
-        showAlert("Thiếu thông tin", "Không được để trống tên và số điện thoại khách hàng sếp ơi!", "warning");
+        showAlert("Thiếu thông tin", "Không được để trống tên và số điện thoại khách hàng ơi!", "warning");
         return;
     }
 
@@ -398,7 +398,7 @@ async function processUpdateOrder() {
 async function deleteOrderAction(id) {
     const result = await showConfirm(
         "Xóa đơn hàng?", 
-        "⚠️ Sếp có chắc chắn muốn XÓA VĨNH VIỄN đơn đặt hàng này không? Dữ liệu sẽ không thể khôi phục!"
+        "⚠️ Bạn có chắc chắn muốn XÓA VĨNH VIỄN đơn đặt hàng này không? Dữ liệu sẽ không thể khôi phục!"
     );
     
     if (!result.isConfirmed) return;
