@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Viết Chi Tiết - In Ấn Sắc Màu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/chi-tiet-bai-viet.css">
+</head>
+<body>
+
+    <header id="dynamic-header"></header>
+
+    <div id="loading" style="text-align:center; padding: 150px; color: var(--accent-glow); font-weight:bold; font-size: 18px;">
+        Đang sắp xếp trang bài viết...
+    </div>
+
+    <main id="post-detail-wrapper" style="display: none;" class="post-detail-container">
+        
+        <header class="post-header">
+            <div class="post-meta">📅 Đăng ngày: <span id="post-date">...</span> • Chuyên mục: Kiến thức in ấn</div>
+            <h1 id="post-title">Tiêu đề bài viết</h1>
+        </header>
+
+        <div class="post-banner" id="post-banner-img"></div>
+
+        <article class="post-article glossy-box">
+            <div class="rich-text-content" id="post-main-content"></div>
+        </article>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="bai-viet.html" class="btn-back-blog">← Quay lại mục bài viết</a>
+        </div>
+
+    </main>
+
+    <footer id="dynamic-footer"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/components.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/chi-tiet-bai-viet.js"></script>
+</body>
+</html>

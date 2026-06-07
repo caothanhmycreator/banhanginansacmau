@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tin Tức & Kiến Thức In Ấn - Sắc Màu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/bai-viet.css">
+</head>
+<body>
+
+    <header id="dynamic-header"></header>
+
+    <div id="loading" style="text-align:center; padding: 150px; color: var(--accent-glow); font-weight:bold; font-size: 18px;">
+        Đang đồng bộ dòng thời tin tức...
+    </div>
+
+    <main class="blog-container" id="blog-wrapper" style="display: none;">
+        
+        <section class="magazine-hero">
+            <div class="hero-main-post" id="post-top1"></div>
+            
+            <div class="hero-side-posts" id="post-side-container"></div>
+        </section>
+
+        <div class="blog-section-divider">
+            <h2>BÀI VIẾT <span>MỚI CẬP NHẬT</span></h2>
+            <div class="line"></div>
+        </div>
+
+        <section class="posts-grid" id="regular-posts-grid"></section>
+
+    </main>
+
+    <footer id="dynamic-footer"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/components.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/bai-viet.js"></script>
+</body>
+</html>
