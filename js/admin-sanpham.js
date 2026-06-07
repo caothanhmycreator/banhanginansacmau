@@ -1,31 +1,40 @@
 // ==========================================
-// BỘ NÃO ĐIỀU KHIỂN RIÊNG TRANG SẢN PHẨM
+// BỘ NÃO ĐIỀU KHIỂN RIÊNG TRANG SẢN PHẨM (GIỮ TRANG THÔNG MINH)
 // ==========================================
 
 let allProducts = []; 
 let filteredProducts = []; 
 let currentPage = 1;
 const ITEMS_PER_PAGE = 50; 
-let productCategories = []; // Biến lưu trữ chuyên mục động
+let productCategories = []; 
 
-function initPageData() {
-    loadProductCategories().then(() => {
-        loadAdminProductList();
-    });
+async function initPageData() {
+    await loadProductCategories();
+    loadAdminProductList();
 }
 
 // ------------------------------------------
-// KHỐI QUẢN LÝ CHUYÊN MỤC SẢN PHẨM ĐỘNG
+// KHỐI QUẢN LÝ DANH MỤC SẢN PHẨM 
 // ------------------------------------------
 async function loadProductCategories() {
     const catData = await API.getSettings('product_categories');
     if (catData) {
         productCategories = JSON.parse(catData);
     } else {
-        // Mặc định khởi tạo vài chuyên mục nếu hệ thống mới
         productCategories = [
-            { id: 'name-card', name: 'Name Card' },
-            { id: 'bia-folder', name: 'Bìa Folder Kẹp File' }
+            { id: 'thiep-cuoi', name: 'Thiệp cưới' },
+            { id: 'name-card', name: 'Name card' },
+            { id: 'bia-folder', name: 'Bìa folder' },
+            { id: 'to-roi', name: 'Tờ rơi' },
+            { id: 'hoa-don', name: 'Hóa đơn' },
+            { id: 'ao', name: 'In áo' },
+            { id: 'tem', name: 'Tem nhãn' },
+            { id: 'menu', name: 'Menu thực đơn' },
+            { id: 'bang-ten', name: 'Bảng tên' },
+            { id: 'logo', name: 'Thiết kế Logo' },
+            { id: 'bo-nhan-dien', name: 'Bộ nhận diện thương hiệu' },
+            { id: 'dich-vu-thiet-ke', name: 'Dịch vụ thiết kế' },
+            { id: 'dich-vu', name: 'Dịch vụ khác' }
         ];
         await API.updateSettings('product_categories', JSON.stringify(productCategories));
     }
@@ -35,23 +44,35 @@ async function loadProductCategories() {
 function renderCategorySelects() {
     const addSelect = document.getElementById('prodCategory');
     const editSelect = document.getElementById('editProdCategory');
+    
+    const uniqueCats = [];
+    const map = new Map();
+    for (const item of productCategories) {
+        if(!map.has(item.id)){
+            map.set(item.id, true);
+            uniqueCats.push(item);
+        }
+    }
+    productCategories = uniqueCats;
+
     let html = '';
-    productCategories.forEach(cat => {
-        html += `<option value="${cat.id}">${cat.name}</option>`;
+    productCategories.forEach(cat => { 
+        html += `<option value="${cat.id}" style="background: #0f172a; color: #fff;">${cat.name}</option>`; 
     });
+    
     if (addSelect) addSelect.innerHTML = html;
     if (editSelect) editSelect.innerHTML = html;
 }
 
 async function addNewProductCategory() {
     const { value: catName } = await Swal.fire({
-        title: 'Thêm Chuyên Mục Sản Phẩm',
+        title: 'Thêm Danh Mục Mới',
         input: 'text',
-        inputPlaceholder: 'Ví dụ: Tem Nhãn Decal',
+        inputPlaceholder: 'Ví dụ: Khung Ảnh Gỗ',
         showCancelButton: true,
         background: '#1e293b', color: '#fff',
         confirmButtonColor: '#E65100',
-        confirmButtonText: 'Lưu Chuyên Mục',
+        confirmButtonText: 'Lưu',
         cancelButtonText: 'Hủy'
     });
 
@@ -60,27 +81,90 @@ async function addNewProductCategory() {
         const catId = cleanName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
 
         if (productCategories.find(c => c.id === catId)) {
-            showAlert("Lỗi", "Chuyên mục này đã tồn tại!", "error");
-            return;
+            showAlert("Lỗi", "Danh mục này đã tồn tại!", "error"); return;
         }
 
         productCategories.push({ id: catId, name: cleanName });
         const success = await API.updateSettings('product_categories', JSON.stringify(productCategories));
-
+        
         if (success) {
             renderCategorySelects();
             document.getElementById('prodCategory').value = catId;
-            Swal.fire({title: "Thành công!", text: "Đã thêm chuyên mục mới.", icon: "success", background: '#1e293b', color: '#fff', timer: 1500, showConfirmButton: false});
+            Swal.fire({title: "Thành công!", icon: "success", background: '#1e293b', color: '#fff', timer: 1500, showConfirmButton: false});
+        }
+    }
+}
+
+async function editProductCategory(selectId) {
+    const selectEl = document.getElementById(selectId);
+    const catId = selectEl.value;
+    if (!catId) {
+        showAlert("Lỗi", "Vui lòng chọn một danh mục để sửa!", "warning"); return;
+    }
+    const catObj = productCategories.find(c => c.id === catId);
+
+    const { value: newName } = await Swal.fire({
+        title: 'Sửa Tên Danh Mục',
+        input: 'text',
+        inputValue: catObj.name,
+        showCancelButton: true,
+        background: '#1e293b', color: '#fff',
+        confirmButtonColor: '#3b82f6',
+        confirmButtonText: 'Cập Nhật',
+        cancelButtonText: 'Hủy'
+    });
+
+    if (newName && newName.trim() !== '' && newName.trim() !== catObj.name) {
+        catObj.name = newName.trim();
+        const success = await API.updateSettings('product_categories', JSON.stringify(productCategories));
+        if (success) {
+            renderCategorySelects();
+            document.getElementById(selectId).value = catId; 
+            Swal.fire({title: "Thành công!", icon: "success", background: '#1e293b', color: '#fff', timer: 1500, showConfirmButton: false});
+            loadAdminProductList(true); // Cập nhật tên và giữ trang
         } else {
             showAlert("Lỗi", "Không thể lưu vào hệ thống!", "error");
         }
     }
 }
 
+async function deleteProductCategory(selectId) {
+    const selectEl = document.getElementById(selectId);
+    const catId = selectEl.value;
+    if (!catId) {
+        showAlert("Lỗi", "Vui lòng chọn một danh mục để xóa!", "warning"); return;
+    }
+    const catObj = productCategories.find(c => c.id === catId);
+
+    const result = await Swal.fire({
+        title: 'Xóa Danh Mục?',
+        text: `Bạn có chắc muốn xóa "${catObj.name}"? Các sản phẩm cũ thuộc danh mục này sẽ chuyển thành "Chưa phân loại".`,
+        icon: 'warning',
+        showCancelButton: true,
+        background: '#1e293b', color: '#fff',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+    });
+
+    if (result.isConfirmed) {
+        productCategories = productCategories.filter(c => c.id !== catId);
+        const success = await API.updateSettings('product_categories', JSON.stringify(productCategories));
+        if (success) {
+            renderCategorySelects();
+            Swal.fire({title: "Đã xóa!", icon: "success", background: '#1e293b', color: '#fff', timer: 1500, showConfirmButton: false});
+            loadAdminProductList(true); // Cập nhật bảng và giữ trang
+        } else {
+            showAlert("Lỗi", "Không thể xóa danh mục!", "error");
+        }
+    }
+}
+
 // ------------------------------------------
-// PHẦN 1: NẠP & TÌM KIẾM DỮ LIỆU
+// NẠP & TÌM KIẾM DỮ LIỆU (CẢI TIẾN GIỮ TRANG)
 // ------------------------------------------
-async function loadAdminProductList() {
+async function loadAdminProductList(keepPage = false) {
     const tbody = document.getElementById('admin-product-list');
     if (!tbody) return;
 
@@ -91,8 +175,27 @@ async function loadAdminProductList() {
     }
 
     allProducts = products;
-    filteredProducts = [...allProducts]; 
-    currentPage = 1;
+    
+    // Nếu đang tìm kiếm dở, giữ nguyên kết quả tìm kiếm sau khi load
+    const keyword = document.getElementById('searchProductInput').value.toLowerCase().trim();
+    if (keyword) {
+        filteredProducts = allProducts.filter(p => 
+            p.name.toLowerCase().includes(keyword) || 
+            p.slug.toLowerCase().includes(keyword)
+        );
+    } else {
+        filteredProducts = [...allProducts]; 
+    }
+
+    // Xử lý neo trang
+    if (!keepPage) {
+        currentPage = 1;
+    } else {
+        // Tránh lỗi khi xóa sản phẩm cuối cùng của trang cuối
+        const maxPage = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+        if (currentPage > maxPage) currentPage = maxPage || 1;
+    }
+
     renderProductTable();
 }
 
@@ -122,14 +225,13 @@ function renderProductTable() {
 
     let rowsHTML = '';
     pageData.forEach(prod => {
-        const formattedPrice = new Number(prod.price).toLocaleString('vi-VN') + ' đ';
+        const formattedPrice = Number(prod.price).toLocaleString('vi-VN') + ' đ';
         
-        // Nhận diện chuyên mục
         const catObj = productCategories.find(c => c.id === prod.category);
         const catName = catObj ? catObj.name : 'Chưa phân loại';
 
         rowsHTML += `
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); hover:background:rgba(255,255,255,0.01);">
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 15px 20px;"><img src="${prod.image_url}" style="width:50px; height:50px; object-fit:cover; border-radius:6px; border:1px solid rgba(255,255,255,0.1);"></td>
                 <td style="padding: 15px 20px;">
                     <strong style="color:#fff; display:block; margin-bottom:5px;">${prod.name}</strong>
@@ -163,47 +265,47 @@ function goToPage(pageNumber) {
 }
 
 // ------------------------------------------
-// PHẦN 2: THÊM DÒNG THÔNG SỐ & GÓI GIÁ
+// THÔNG SỐ & BẢNG GIÁ ĐỘNG
 // ------------------------------------------
 function addSpecRow() {
     const container = document.getElementById('specs-container');
     const div = document.createElement('div'); div.className = 'dynamic-row';
-    div.innerHTML = `<input type="text" class="spec-key" placeholder="Tên (VD: Kích thước)"><input type="text" class="spec-val" placeholder="Giá trị (VD: 21x30cm)"><button type="button" class="btn-del" onclick="this.parentElement.remove()">Xóa</button>`;
+    div.innerHTML = `<input type="text" class="spec-key" placeholder="Tên"><input type="text" class="spec-val" placeholder="Giá trị"><button type="button" class="btn-del" onclick="this.parentElement.remove()">Xóa</button>`;
     container.appendChild(div);
 }
 
 function addTierRow() {
     const container = document.getElementById('tiers-container');
     const div = document.createElement('div'); div.className = 'dynamic-row';
-    div.innerHTML = `<input type="text" class="tier-label" placeholder="Gói (VD: In 500 cái)"><input type="number" class="tier-price" placeholder="Giá lẻ từng cái"><button type="button" class="btn-del" onclick="this.parentElement.remove()">Xóa</button>`;
+    div.innerHTML = `<input type="text" class="tier-label" placeholder="Gói"><input type="number" class="tier-price" placeholder="Giá lẻ"><button type="button" class="btn-del" onclick="this.parentElement.remove()">Xóa</button>`;
     container.appendChild(div);
 }
 
 function addEditSpecRow() {
     const container = document.getElementById('edit-specs-container');
     const div = document.createElement('div'); div.className = 'dynamic-row';
-    div.innerHTML = `<input type="text" class="edit-spec-key" placeholder="Tên (VD: Kích thước)"><input type="text" class="edit-spec-val" placeholder="Giá trị (VD: 21x30cm)"><button type="button" class="btn-del" onclick="this.parentElement.remove()">Xóa</button>`;
+    div.innerHTML = `<input type="text" class="edit-spec-key" placeholder="Tên"><input type="text" class="edit-spec-val" placeholder="Giá trị"><button type="button" class="btn-del" onclick="this.parentElement.remove()">Xóa</button>`;
     container.appendChild(div);
 }
 
 function addEditTierRow() {
     const container = document.getElementById('edit-tiers-container');
     const div = document.createElement('div'); div.className = 'dynamic-row';
-    div.innerHTML = `<input type="text" class="edit-tier-label" placeholder="Gói (VD: In 500 cái)"><input type="number" class="edit-tier-price" placeholder="Giá lẻ từng cái"><button type="button" class="btn-del" onclick="this.parentElement.remove()">Xóa</button>`;
+    div.innerHTML = `<input type="text" class="edit-tier-label" placeholder="Gói"><input type="number" class="edit-tier-price" placeholder="Giá lẻ"><button type="button" class="btn-del" onclick="this.parentElement.remove()">Xóa</button>`;
     container.appendChild(div);
 }
 
 // ------------------------------------------
-// PHẦN 3: XỬ LÝ DATABASE (THÊM, SỬA, XÓA)
+// XỬ LÝ DATABASE (THÊM, SỬA, XÓA SẢN PHẨM)
 // ------------------------------------------
 async function deleteProductAction(id) {
-    const result = await showConfirm("Xóa vĩnh viễn?", "Sếp có chắc chắn muốn XÓA VĨNH VIỄN sản phẩm này không?");
+    const result = await showConfirm("Xóa vĩnh viễn?", "Sếp có chắc chắn muốn xóa?");
     if (!result.isConfirmed) return;
     
     const success = await API.deleteProduct(id);
     if (success) {
-        Swal.fire({ title: "Đã xóa!", text: "Sản phẩm đã bị gỡ khỏi hệ thống.", icon: "success", background: '#1e293b', color: '#fff', timer: 2000, showConfirmButton: false });
-        loadAdminProductList(); 
+        Swal.fire({ title: "Đã xóa!", icon: "success", background: '#1e293b', color: '#fff', timer: 1500, showConfirmButton: false });
+        loadAdminProductList(true); // Xóa xong giữ trang
     } else {
         showAlert("Lỗi!", "Hệ thống không xóa được sản phẩm!", "error");
     }
@@ -213,7 +315,7 @@ async function processSubmitProduct() {
     const btn = document.getElementById('submitBtn');
     const name = document.getElementById('prodName').value.trim();
     const slug = document.getElementById('prodSlug').value.trim().toLowerCase(); 
-    const category = document.getElementById('prodCategory').value; // Nạp Category
+    const category = document.getElementById('prodCategory').value;
     const price = document.getElementById('prodPrice').value;
     const desc = document.getElementById('prodDesc').value.trim();
     const content = document.getElementById('prodContent').value.trim();
@@ -224,28 +326,27 @@ async function processSubmitProduct() {
         showAlert("Thiếu thông tin", "Vui lòng điền đầy đủ các mục bắt buộc nhé!", "warning"); return;
     }
     if (!imageFile) {
-        showAlert("Thiếu ảnh", "Vui lòng chọn ảnh đại diện cho sản phẩm mới nhé!", "warning"); return;
+        showAlert("Thiếu ảnh", "Vui lòng chọn ảnh đại diện!", "warning"); return;
     }
 
     btn.disabled = true;
 
     try {
-        btn.innerText = "ĐANG KIỂM TRA MÃ SLUG...";
+        btn.innerText = "ĐANG KIỂM TRA MÃ ID...";
         const { data: existingProd } = await supabaseClient.from('products').select('id').eq('slug', slug).maybeSingle();
 
         if (existingProd) {
-            showAlert("Trùng mã ID", `❌ Mã ID "${slug}" này đã được dùng. Vui lòng đặt mã khác nhé sếp!`, "error");
+            showAlert("Trùng mã ID", "Mã ID này đã được dùng. Đổi mã khác nhé sếp!", "error");
             btn.innerText = "LƯU VÀ PHÁT HÀNH SẢN PHẨM"; btn.disabled = false; return;
         }
 
-        btn.innerText = "ĐANG TẢI ẢNH ĐẠI DIỆN MỚI...";
+        btn.innerText = "ĐANG TẢI ẢNH...";
         const imageUrl = await API.uploadImage(imageFile, 'products');
-        if (!imageUrl) throw new Error("Không tải được ảnh đại diện.");
 
         let galleryUrls = [];
         if (galleryFiles.length > 0) {
             for (let i = 0; i < galleryFiles.length; i++) {
-                btn.innerText = `ĐANG TẢI THƯ VIỆN ẢNH (${i+1}/${galleryFiles.length})...`;
+                btn.innerText = `ĐANG TẢI ẢNH PHỤ (${i+1}/${galleryFiles.length})...`;
                 const url = await API.uploadImage(galleryFiles[i], 'products/gallery'); 
                 if (url) galleryUrls.push(url);
             }
@@ -273,22 +374,21 @@ async function processSubmitProduct() {
             gallery: galleryUrls.length > 0 ? galleryUrls : null
         };
 
-        btn.innerText = "ĐANG GHI DỮ LIỆU VÀO HỆ THỐNG...";
+        btn.innerText = "ĐANG GHI DỮ LIỆU...";
         const { error } = await API.saveProduct(finalPayload);
 
         if (error) { showAlert("Lỗi hệ thống", error.message, "error"); } 
         else {
             Swal.fire({ title: "Thành công!", text: "Phát hành sản phẩm mới thành công!", icon: "success", background: '#1e293b', color: '#fff', confirmButtonColor: '#E65100' });
             document.getElementById('productForm').reset();
-            loadAdminProductList(); 
+            loadAdminProductList(); // Thêm mới thì nhả về trang 1 để xem bài mới đăng
         }
     } catch (err) {
-        console.error(err); showAlert("Lỗi!", "Có lỗi phát sinh trong quá trình xử lý!", "error");
+        console.error(err); showAlert("Lỗi!", "Có lỗi phát sinh!", "error");
     }
     btn.innerText = "LƯU VÀ PHÁT HÀNH SẢN PHẨM"; btn.disabled = false;
 }
 
-// Gọi Popup Sửa
 async function prepareEditProduct(slug) {
     const product = await API.getProductBySlug(slug);
     if (!product) { showAlert("Lỗi!", "Không tìm thấy dữ liệu sản phẩm!", "error"); return; }
@@ -330,7 +430,6 @@ async function prepareEditProduct(slug) {
     document.getElementById('editProductModal').style.display = 'flex'; 
 }
 
-// Lưu Sửa
 async function processUpdateProduct() {
     const btn = document.getElementById('btnUpdateProduct');
     const id = document.getElementById('editProdId').value; 
@@ -344,29 +443,23 @@ async function processUpdateProduct() {
     const galleryFiles = document.getElementById('editProdGallery').files; 
 
     if (!name || !slug || !price || !desc) {
-        showAlert("Thiếu thông tin", "Vui lòng điền đầy đủ Tên, Mã ID, Giá và Mô tả!", "warning"); return;
+        showAlert("Thiếu thông tin", "Vui lòng điền đủ Tên, Mã ID, Giá và Mô tả!", "warning"); return;
     }
 
     btn.disabled = true;
     btn.innerText = "ĐANG XỬ LÝ...";
 
     try {
-        btn.innerText = "ĐANG KIỂM TRA MÃ ID...";
-        const { data: existingProd } = await supabaseClient
-            .from('products')
-            .select('id')
-            .eq('slug', slug)
-            .neq('id', id) 
-            .maybeSingle();
+        const { data: existingProd } = await supabaseClient.from('products').select('id').eq('slug', slug).neq('id', id).maybeSingle();
 
         if (existingProd) {
-            showAlert("Trùng mã ID", `❌ Mã ID "${slug}" này đã được dùng cho sản phẩm khác rồi. Vui lòng đặt mã khác!`, "error");
+            showAlert("Trùng mã ID", "Mã ID này đã được dùng cho sản phẩm khác rồi!", "error");
             btn.innerText = "LƯU THAY ĐỔI"; btn.disabled = false; return;
         }
 
         let imageUrl = null;
         if (imageFile) {
-            btn.innerText = "ĐANG TẢI ẢNH ĐẠI DIỆN MỚI...";
+            btn.innerText = "ĐANG TẢI ẢNH MỚI...";
             imageUrl = await API.uploadImage(imageFile, 'products');
         }
 
@@ -407,9 +500,9 @@ async function processUpdateProduct() {
         if (error) {
             showAlert("Lỗi hệ thống", error.message, "error");
         } else {
-            Swal.fire({ title: "Thành công!", text: "Cập nhật thông tin sản phẩm xong sếp ơi!", icon: "success", background: '#1e293b', color: '#fff', confirmButtonColor: '#E65100' });
+            Swal.fire({ title: "Thành công!", text: "Cập nhật sản phẩm xong!", icon: "success", background: '#1e293b', color: '#fff', confirmButtonColor: '#E65100' });
             document.getElementById('editProductModal').style.display = 'none';
-            loadAdminProductList(); 
+            loadAdminProductList(true); // Sửa xong neo cứng lại trang hiện tại
         }
     } catch (err) {
         console.error(err); showAlert("Lỗi!", "Có lỗi phát sinh!", "error");

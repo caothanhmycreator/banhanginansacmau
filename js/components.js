@@ -1,21 +1,16 @@
-// 1. Khung sườn Cây Menu ban đầu (Chờ JS bơm dữ liệu động vào)
-const MENU_DATA = [
-    { label: 'Trang Chủ', url: 'index.html' },
-    { label: 'Giới Thiệu', url: 'gioi-thieu.html' },
-    { 
-        label: 'Sản Phẩm', 
-        url: 'san-pham.html',
-        children: [] // Sẽ được tự động nạp từ Supabase
-    },
-    { 
-        label: 'Bài Viết', 
-        url: 'bai-viet.html',
-        children: [] // Sẽ được tự động nạp từ Supabase
-    },
-    { label: 'Liên Hệ', url: 'lien-he.html' }
+// ==========================================
+// CẤU HÌNH COMPONENT: MENU & FOOTER TỰ ĐỘNG
+// ==========================================
+
+// 1. Menu Mặc định (Fallback nếu DB trống)
+let MENU_DATA = [
+    { label: 'Trang Chủ', url: 'index.html', children: [] },
+    { label: 'Sản Phẩm', url: 'san-pham.html', children: [] },
+    { label: 'Bài Viết', url: 'bai-viet.html', children: [] },
+    { label: 'Giới Thiệu', url: 'gioi-thieu.html', children: [] }
 ];
 
-// 2. Hàm tự động vẽ Menu ra giao diện
+// 2. Hàm vẽ Menu ra giao diện HTML
 function buildNavigation() {
     const headerNode = document.getElementById('dynamic-header');
     if (!headerNode) return;
@@ -50,7 +45,7 @@ function buildNavigation() {
     headerNode.innerHTML = menuHTML;
 }
 
-// 3. Hàm tự động vẽ Footer ra giao diện
+// 3. Hàm vẽ Footer
 function buildFooter() {
     const footerNode = document.getElementById('dynamic-footer');
     if (!footerNode) return;
@@ -64,9 +59,9 @@ function buildFooter() {
             <div class="footer-links">
                 <h4>Dịch Vụ Nổi Bật</h4>
                 <ul>
-                    <li><a href="san-pham.html">Tất cả sản phẩm</a></li>
-                    <li><a href="bai-viet.html">Kiến thức ngành in</a></li>
-                    <li><a href="gioi-thieu.html">Về chúng tôi</a></li>
+                    <li><a href="san-pham.html?cat=in-an">In ấn phẩm quảng cáo</a></li>
+                    <li><a href="san-pham.html?sub=name-card">In danh thiếp cao cấp</a></li>
+                    <li><a href="san-pham.html?cat=thiet-ke">Thiết kế bộ nhận diện</a></li>
                 </ul>
             </div>
             <div class="footer-links">
@@ -82,38 +77,39 @@ function buildFooter() {
     `;
 }
 
-// Kích hoạt khi trang web tải xong và lấy Menu Động
+// 4. TIẾN TRÌNH KÉO DỮ LIỆU TỪ DATABASE
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         if (typeof API !== 'undefined') {
-            // Nạp Danh mục Bài viết vào Menu
-            const blogData = await API.getSettings('blog_categories');
-            if (blogData) {
-                const parsedBlogCats = JSON.parse(blogData);
-                const blogMenuIndex = MENU_DATA.findIndex(m => m.url === 'bai-viet.html');
-                if (blogMenuIndex !== -1) {
-                    MENU_DATA[blogMenuIndex].children = parsedBlogCats.map(c => ({
-                        label: c.name,
-                        url: `bai-viet.html?cat=${c.id}`
-                    }));
+            
+            // KÉO MENU TỪ DATABASE (MỚI NÂNG CẤP)
+            const dbMenu = await API.getSettings('site_menu');
+            if (dbMenu && dbMenu !== '[]') {
+                MENU_DATA = JSON.parse(dbMenu); // Đè luôn mảng MENU_DATA mặc định bằng mảng từ Admin
+            } else {
+                // Nếu DB không có Menu, dùng Code tự động chèn mục Sản Phẩm & Blog như cũ để làm phương án dự phòng
+                const blogData = await API.getSettings('blog_categories');
+                if (blogData) {
+                    const parsedBlogCats = JSON.parse(blogData);
+                    const blogMenuIndex = MENU_DATA.findIndex(m => m.url === 'bai-viet.html');
+                    if (blogMenuIndex !== -1) {
+                        MENU_DATA[blogMenuIndex].children = parsedBlogCats.map(c => ({ label: c.name, url: `bai-viet.html?cat=${c.id}` }));
+                    }
                 }
-            }
-
-            // Nạp Danh mục Sản phẩm vào Menu
-            const prodData = await API.getSettings('product_categories');
-            if (prodData) {
-                const parsedProdCats = JSON.parse(prodData);
-                const prodMenuIndex = MENU_DATA.findIndex(m => m.url === 'san-pham.html');
-                if (prodMenuIndex !== -1) {
-                    MENU_DATA[prodMenuIndex].children = parsedProdCats.map(c => ({
-                        label: c.name,
-                        url: `san-pham.html?sub=${c.id}`
-                    }));
+                const prodData = await API.getSettings('product_categories');
+                if (prodData) {
+                    const parsedProdCats = JSON.parse(prodData);
+                    const prodMenu = MENU_DATA.find(m => m.url === 'san-pham.html');
+                    if (prodMenu && parsedProdCats.length > 0) {
+                        parsedProdCats.forEach(c => {
+                            prodMenu.children.push({ label: c.name, url: `san-pham.html?sub=${c.id}` });
+                        });
+                    }
                 }
             }
         }
     } catch (e) {
-        console.error("Lỗi tải menu:", e);
+        console.error("Lỗi đồng bộ Dữ liệu trang:", e);
     }
 
     buildNavigation();

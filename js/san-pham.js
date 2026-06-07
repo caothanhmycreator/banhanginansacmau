@@ -1,9 +1,23 @@
 // ==========================================
-// BỘ NÃO ĐIỀU PHỐI HIỂN THỊ TRANG SẢN PHẨM (PHÂN MỤC TỰ ĐỘNG)
+// BỘ NÃO ĐIỀU PHỐI HIỂN THỊ TRANG SẢN PHẨM (PHÂN MỤC THÔNG MINH)
 // ==========================================
 
+// Danh mục lưới cứng giống hệt cái sếp đã quy hoạch
+const STATIC_GRID_CATEGORIES = [
+    { id: 'thiep', name: 'THIỆP SỰ KIỆN' },
+    { id: 'name-card', name: 'DANH THIẾP (NAME CARD)' },
+    { id: 'bia-folder', name: 'BÌA FOLDER KẸP FILE' },
+    { id: 'to-roi', name: 'TỜ RƠI QUẢNG CÁO' },
+    { id: 'hoa-don', name: 'HÓA ĐƠN & BIỂU MẪU' },
+    { id: 'ao', name: 'IN ÁO ĐỒNG PHỤC' },
+    { id: 'tem', name: 'TEM NHÃN DECAL' },
+    { id: 'menu', name: 'IN MENU THỰC ĐƠN' },
+    { id: 'bang-ten', name: 'BẢNG TÊN NHÂN VIÊN' },
+    { id: 'logo', name: 'THIẾT KẾ LOGO' },
+    { id: 'bo-nhan-dien', name: 'BỘ NHẬN DIỆN THƯƠNG HIỆU' }
+];
+
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Đọc tham số phân loại từ URL
     const urlParams = new URLSearchParams(window.location.search);
     const filterKeyword = urlParams.get('sub') || urlParams.get('cat'); 
 
@@ -13,51 +27,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     const loading = document.getElementById('loading');
     const heroSection = document.getElementById('product-hero-section');
 
-    // 2. Kéo kho từ khóa chuyên mục động từ Supabase
+    // Kéo chuyên mục động từ Supabase
     const catData = await API.getSettings('product_categories');
-    let productCategories = catData ? JSON.parse(catData) : [];
+    let dynamicCats = catData ? JSON.parse(catData) : [];
+    
+    // Ghép chuyên mục tĩnh và động lại làm một để sinh Lưới HTML
+    let ALL_CATEGORIES = [...STATIC_GRID_CATEGORIES];
+    dynamicCats.forEach(c => {
+        ALL_CATEGORIES.push({ id: c.id, name: c.name.toUpperCase() });
+    });
 
-    // Tải toàn bộ sản phẩm
     let products = await API.getProducts();
 
     loading.style.display = 'none';
 
-    // Xử lý trường hợp xưởng trống sản phẩm
     if (!products || products.length === 0) {
         container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #94a3b8; font-size: 16px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
-            Hiện tại chưa có sản phẩm nào trong hệ thống. Anh/Chị quay lại sau nhé!
+            Hiện tại chưa có sản phẩm nào. Anh/Chị quay lại sau nhé!
         </div>`;
         return;
     }
 
-    // 3. PHÂN LUỒNG LOGIC RENDER SẢN PHẨM
     if (filterKeyword) {
-        // NẾU KHÁCH ĐANG XEM 1 CHUYÊN MỤC CỤ THỂ
-        const catObj = productCategories.find(c => c.id === filterKeyword);
+        if (heroSection) heroSection.style.display = 'none';
+        
+        // Cố gắng tìm tên tiếng việt chuẩn
+        const catObj = ALL_CATEGORIES.find(c => c.id === filterKeyword || filterKeyword.includes(c.id));
         let prettyTitle = catObj ? catObj.name : filterKeyword.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         
         titleElement.innerHTML = `DANH MỤC: <span>${prettyTitle}</span>`;
         descElement.innerText = `Khám phá các sản phẩm ${prettyTitle.toLowerCase()} ấn tượng nhất tại Sắc Màu.`;
 
-        // Lọc sản phẩm (Tìm theo cột Category, nếu sản phẩm cũ chưa có thì tìm fallback vào Slug)
-        const filteredProds = products.filter(p => p.category === filterKeyword || (!p.category && p.slug.includes(filterKeyword)));
-
-        if (heroSection) heroSection.style.display = 'none';
-
-        if (filteredProds.length === 0) {
-            container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #94a3b8; font-size: 16px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
-                Hiện tại chưa có sản phẩm nào trong chuyên mục này.
-            </div>`;
-        } else {
-            container.innerHTML = `<div class="products-grid">${generateGridHTML(filteredProds)}</div>`;
-        }
-
+        // Lọc thông minh (Nếu sản phẩm có set category thì ưu tiên, nếu không thì fallback về lấy mã Link)
+        const filteredProds = products.filter(p => (p.category && p.category.includes(filterKeyword)) || (!p.category && p.slug.includes(filterKeyword)));
+        
+        container.innerHTML = `<div class="products-grid">${generateGridHTML(filteredProds)}</div>`;
     } else {
-        // NẾU XEM TRANG TỔNG "TẤT CẢ SẢN PHẨM"
-        titleElement.innerHTML = `TẤT CẢ <span>SẢN PHẨM</span>`;
         if (heroSection) heroSection.style.display = 'flex';
 
-        // Bơm Sản phẩm Đinh (Top 1)
+        // Bơm SP Top 1
         const top1 = products[0];
         const top1Container = document.getElementById('prod-top1');
         if (top1Container && top1) {
@@ -66,11 +74,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="main-img-box" style="background-image: url('${top1.image_url}')" onclick="goToProductDetail('${top1.slug}')"></div>
                 <h1 onclick="goToProductDetail('${top1.slug}')">${top1.name}</h1>
                 <div class="hero-price">${priceStr}</div>
-                <p>${top1.description || 'Sản phẩm in ấn thiết kế độc quyền từ xưởng In Ấn Sắc Màu Đồng Tháp.'}</p>
+                <p>${top1.description || 'Sản phẩm thiết kế độc quyền.'}</p>
             `;
         }
 
-        // Bơm 2 Sản phẩm phụ (Top 2 & 3)
+        // Bơm SP Top 2 & 3
         const sideContainer = document.getElementById('prod-side-container');
         if (sideContainer) {
             let sideHTML = '';
@@ -90,15 +98,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             sideContainer.innerHTML = sideHTML;
         }
 
-        // Tự động gom nhóm rải lưới các sản phẩm còn lại
+        // --- RẢI TOÀN BỘ SẢN PHẨM CÒN LẠI VÀO LƯỚI ---
         const regularProducts = products.slice(3);
         if(regularProducts.length > 0) {
             let containerHTML = '';
             let usedProductIds = new Set();
 
-            productCategories.forEach(cat => {
-                const groupProds = regularProducts.filter(p => p.category === cat.id || (!p.category && p.slug.includes(cat.id)));
-                
+            ALL_CATEGORIES.forEach(cat => {
+                const groupProds = regularProducts.filter(p => (p.category && p.category.includes(cat.id)) || (!p.category && p.slug.includes(cat.id)));
                 if (groupProds.length > 0) {
                     groupProds.forEach(p => usedProductIds.add(p.id));
                     containerHTML += `
@@ -113,6 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
+            // Gói ghém các sản phẩm chưa phân loại
             const otherProds = regularProducts.filter(p => !usedProductIds.has(p.id));
             if (otherProds.length > 0) {
                 containerHTML += `
@@ -125,13 +133,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 `;
             }
-
             container.innerHTML = containerHTML;
         }
     }
 });
 
-// Hàm hỗ trợ: Render tự động các Thẻ (Cards) sản phẩm
 function generateGridHTML(prods) {
     let html = '';
     prods.forEach(p => {

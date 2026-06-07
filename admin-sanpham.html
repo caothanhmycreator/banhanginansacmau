@@ -46,17 +46,19 @@
                         <input type="text" id="prodName" placeholder="Ví dụ: Bìa Folder Tên Doanh Nghiệp" required>
                     </div>
                     <div class="form-group">
-                        <label>Mã ID tùy chỉnh (Slug viết liền không dấu - KO TRÙNG)</label>
+                        <label>Mã ID tùy chỉnh (Slug viết liền không dấu)</label>
                         <input type="text" id="prodSlug" placeholder="Ví dụ: bia-folder-a5" required>
                     </div>
                     
                     <div class="form-group">
-                        <label>Chuyên mục sản phẩm</label>
-                        <div style="display: flex; gap: 10px;">
-                            <select id="prodCategory" required style="flex-grow: 1;">
-                                <option value="">Đang tải dữ liệu...</option>
+                        <label>Danh mục sản phẩm</label>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="prodCategory" required style="flex-grow: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); padding: 12px 15px; border-radius: 8px; color: #fff; font-family: inherit;">
+                                <option value="" style="background: #0f172a; color: #fff;">Đang tải dữ liệu...</option>
                             </select>
-                            <button type="button" onclick="addNewProductCategory()" style="background: var(--accent); color: #fff; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.2s;">+ Thêm Mới</button>
+                            <button type="button" onclick="addNewProductCategory()" style="background: var(--accent); color: #fff; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;" title="Thêm danh mục mới">+ Thêm</button>
+                            <button type="button" onclick="editProductCategory('prodCategory')" style="background: #3b82f6; color: #fff; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;" title="Sửa tên danh mục">Sửa</button>
+                            <button type="button" onclick="deleteProductCategory('prodCategory')" style="background: #ef4444; color: #fff; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;" title="Xóa danh mục">Xóa</button>
                         </div>
                     </div>
 
@@ -70,7 +72,7 @@
                     </div>
                     
                     <div class="form-group full-width">
-                        <label>Thư viện ảnh sản phẩm (Chọn nhiều ảnh cùng lúc)</label>
+                        <label>Thư viện ảnh sản phẩm</label>
                         <input type="file" id="prodGallery" accept="image/*" multiple> 
                     </div>
                     
@@ -80,7 +82,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>Thông số kỹ thuật (Kích thước, Chất liệu...)</label>
+                        <label>Thông số kỹ thuật</label>
                         <div id="specs-container">
                             <div class="dynamic-row">
                                 <input type="text" class="spec-key" placeholder="Tên (VD: Chất liệu)">
@@ -102,8 +104,8 @@
                     </div>
 
                     <div class="form-group full-width">
-                        <label>Bài viết thuyết minh chi tiết sản phẩm (Hỗ trợ nhập mã HTML)</label>
-                        <textarea id="prodContent" rows="8" placeholder="Viết bài phân tích chi tiết vật liệu, ưu nhược điểm, hướng dẫn đặt hàng..."></textarea>
+                        <label>Bài viết thuyết minh chi tiết sản phẩm</label>
+                        <textarea id="prodContent" rows="8"></textarea>
                     </div>
                 </div>
                 <button type="button" class="btn-submit" id="submitBtn" onclick="processSubmitProduct()">Lưu và phát hành sản phẩm</button>
@@ -111,18 +113,18 @@
 
             <div style="margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 40px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-                    <h3 style="font-size: 22px; margin: 0; font-weight: 800;">Danh Sách Sản Phẩm Hiện Có</h3>
-                    <input type="text" id="searchProductInput" onkeyup="filterProducts()" placeholder="🔍 Tìm tên hoặc mã sản phẩm..." style="width: 100%; max-width: 350px; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: #fff;">
+                    <h3 style="font-size: 22px; margin: 0; font-weight: 800;">Danh Sách Sản Phẩm</h3>
+                    <input type="text" id="searchProductInput" onkeyup="filterProducts()" placeholder="🔍 Tìm tên sản phẩm..." style="width: 100%; max-width: 350px; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: #fff;">
                 </div>
                 <div style="overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border-color);">
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
                         <thead>
                             <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #94a3b8;">
-                                <th style="padding: 15px 20px; width: 100px;">Ảnh</th>
+                                <th style="padding: 15px 20px;">Ảnh</th>
                                 <th style="padding: 15px 20px;">Tên sản phẩm</th>
-                                <th style="padding: 15px 20px;">Mã Slug (ID link)</th>
-                                <th style="padding: 15px 20px;">Giá gốc</th>
-                                <th style="padding: 15px 20px; text-align: right; width: 160px;">Thao tác</th>
+                                <th style="padding: 15px 20px;">Mã Slug</th>
+                                <th style="padding: 15px 20px;">Giá</th>
+                                <th style="padding: 15px 20px; text-align: right;">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody id="admin-product-list"></tbody>
@@ -133,25 +135,33 @@
         </div>
     </main>
 
-    <div class="modal-overlay" id="editProductModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+    <div class="modal-overlay" id="editProductModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
         <div class="modal-content" style="background: var(--bg-admin); border: 1px solid var(--primary); padding: 35px; border-radius: 16px; width: 95%; max-width: 1050px; max-height: 85vh; overflow-y:auto; position: relative;">
             <span class="close-modal" onclick="document.getElementById('editProductModal').style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; color: #94a3b8; cursor: pointer;">&times;</span>
-            <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; font-size: 20px;">Cập Nhật Thông Tin Sản Phẩm</h3>
+            <h3 style="margin-top: 0; color: #fff; margin-bottom: 25px;">Cập Nhật Sản Phẩm</h3>
             <form id="editProductForm">
                 <input type="hidden" id="editProdId" value="">
                 <div class="form-grid">
                     <div class="form-group"><label>Tên sản phẩm</label><input type="text" id="editProdName" required></div>
-                    <div class="form-group"><label>Mã ID tùy chỉnh</label><input type="text" id="editProdSlug" required></div>
+                    <div class="form-group"><label>Mã ID</label><input type="text" id="editProdSlug" required></div>
                     
-                    <div class="form-group"><label>Chuyên mục</label><select id="editProdCategory" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 12px 15px; border-radius: 8px; color: #fff;"></select></div>
-                    <div class="form-group"><label>Giá hiển thị cơ bản</label><input type="number" id="editProdPrice" required></div>
-                    
+                    <div class="form-group">
+                        <label>Danh mục sản phẩm</label>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="editProdCategory" style="flex-grow: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); padding: 12px 15px; border-radius: 8px; color: #fff; font-family: inherit;"></select>
+                            <button type="button" onclick="addNewProductCategory()" style="background: var(--accent); color: #fff; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;">+ Thêm</button>
+                            <button type="button" onclick="editProductCategory('editProdCategory')" style="background: #3b82f6; color: #fff; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;">Sửa</button>
+                            <button type="button" onclick="deleteProductCategory('editProdCategory')" style="background: #ef4444; color: #fff; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;">Xóa</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group"><label>Giá</label><input type="number" id="editProdPrice" required></div>
                     <div class="form-group"><label>Ảnh đại diện</label><input type="file" id="editProdImage" accept="image/*"></div>
                     <div class="form-group full-width"><label>Thư viện ảnh</label><input type="file" id="editProdGallery" accept="image/*" multiple></div>
-                    <div class="form-group full-width"><label>Mô tả tóm tắt ngắn</label><textarea id="editProdDesc" rows="2" required></textarea></div>
-                    <div class="form-group"><label>Thông số kỹ thuật</label><div id="edit-specs-container"></div><button type="button" class="btn-add" onclick="addEditSpecRow()">+ Thêm Dòng</button></div>
-                    <div class="form-group"><label>Bảng phân loại giá</label><div id="edit-tiers-container"></div><button type="button" class="btn-add" onclick="addEditTierRow()">+ Thêm Gói</button></div>
-                    <div class="form-group full-width"><label>Bài viết chi tiết sản phẩm</label><textarea id="editProdContent" rows="8"></textarea></div>
+                    <div class="form-group full-width"><label>Mô tả ngắn</label><textarea id="editProdDesc" rows="2"></textarea></div>
+                    <div class="form-group"><label>Thông số kỹ thuật</label><div id="edit-specs-container"></div><button type="button" class="btn-add" onclick="addEditSpecRow()">+ Thêm</button></div>
+                    <div class="form-group"><label>Bảng giá</label><div id="edit-tiers-container"></div><button type="button" class="btn-add" onclick="addEditTierRow()">+ Thêm</button></div>
+                    <div class="form-group full-width"><label>Nội dung chi tiết</label><textarea id="editProdContent" rows="8"></textarea></div>
                 </div>
                 <button type="button" class="btn-submit" id="btnUpdateProduct" onclick="processUpdateProduct()">LƯU THAY ĐỔI</button>
             </form>
@@ -161,6 +171,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/api.js"></script>
-    <script src="js/admin-auth.js"></script>    <script src="js/admin-sanpham.js"></script> 
+    <script src="js/admin-auth.js"></script>
+    <script src="js/admin-sanpham.js"></script> 
 </body>
 </html>
