@@ -1,48 +1,21 @@
-// 1. Cấu hình cây Menu 3 cấp (Chuyên mục Bài Viết sẽ được tạo tự động)
+// 1. Khung sườn Cây Menu ban đầu (Chờ JS bơm dữ liệu động vào)
 const MENU_DATA = [
     { label: 'Trang Chủ', url: 'index.html' },
     { label: 'Giới Thiệu', url: 'gioi-thieu.html' },
     { 
         label: 'Sản Phẩm', 
         url: 'san-pham.html',
-        children: [
-            { 
-                label: 'In Ấn', 
-                url: 'san-pham.html?cat=in-an',
-                children: [
-                    { label: 'Thiệp cưới', url: 'san-pham.html?sub=thiep-cuoi' },
-                    { label: 'Thiệp sinh nhật', url: 'san-pham.html?sub=thiep-sinh-nhat'},
-                    { label: 'Thiệp tân gia', url: 'san-pham.html?sub=thiep-tan-gia' },
-                    { label: 'Name card', url: 'san-pham.html?sub=name-card' },
-                    { label: 'Bìa folder', url: 'san-pham.html?sub=bia-folder' },
-                    { label: 'Tờ rơi', url: 'san-pham.html?sub=to-roi' },
-                    { label: 'Hóa đơn', url: 'san-pham.html?sub=hoa-don' },
-                    { label: 'Áo', url: 'san-pham.html?sub=ao' },
-                    { label: 'Tem nhãn', url: 'san-pham.html?sub=tem' },
-                    { label: 'Menu', url: 'san-pham.html?sub=menu' },
-                    { label: 'Bảng tên', url: 'san-pham.html?sub=bang-ten' },
-                ]
-            },
-            { 
-                label: 'Thiết Kế', 
-                url: 'san-pham.html?cat=thiet-ke',
-                children: [
-                    { label: 'Logo', url: 'san-pham.html?sub=logo' },
-                    { label: 'Bộ nhận diện thương hiệu', url: 'san-pham.html?sub=bo-nhan-dien' },
-                    { label: 'Dịch vụ thiết kế', url: 'san-pham.html?sub=dich-vu-thiet-ke' }
-                ]
-            },
-            { label: 'Dịch Vụ Khác', url: 'san-pham.html?cat=dich-vu' }
-        ]
+        children: [] // Sẽ được tự động nạp từ Supabase
     },
     { 
         label: 'Bài Viết', 
         url: 'bai-viet.html',
-        children: [] // Trống để JavaScript tự nhúng từ Database vào
+        children: [] // Sẽ được tự động nạp từ Supabase
     },
     { label: 'Liên Hệ', url: 'lien-he.html' }
 ];
 
+// 2. Hàm tự động vẽ Menu ra giao diện
 function buildNavigation() {
     const headerNode = document.getElementById('dynamic-header');
     if (!headerNode) return;
@@ -77,6 +50,7 @@ function buildNavigation() {
     headerNode.innerHTML = menuHTML;
 }
 
+// 3. Hàm tự động vẽ Footer ra giao diện
 function buildFooter() {
     const footerNode = document.getElementById('dynamic-footer');
     if (!footerNode) return;
@@ -85,14 +59,14 @@ function buildFooter() {
         <div class="footer-content">
             <div class="footer-about">
                 <h3>IN ẤN SẮC MÀU<span>.</span></h3>
-                <p>Xưởng in ấn và thiết kế quảng cáo chuyên nghiệp tại Cao Lãnh, Đồng Tháp. Đồng hành định hình và củng cố sức mạnh thương hiệu từ năm 2017.</p>
+                <p>Xưởng in ấn và thiết kế quảng cáo chuyên nghiệp tại TP. Cao Lãnh, Đồng Tháp. Đồng hành định hình và củng cố sức mạnh thương hiệu từ năm 2017.</p>
             </div>
             <div class="footer-links">
                 <h4>Dịch Vụ Nổi Bật</h4>
                 <ul>
-                    <li><a href="san-pham.html?cat=in-an">In ấn phẩm quảng cáo</a></li>
-                    <li><a href="san-pham.html?sub=name-card">In danh thiếp cao cấp</a></li>
-                    <li><a href="san-pham.html?cat=thiet-ke">Thiết kế bộ nhận diện</a></li>
+                    <li><a href="san-pham.html">Tất cả sản phẩm</a></li>
+                    <li><a href="bai-viet.html">Kiến thức ngành in</a></li>
+                    <li><a href="gioi-thieu.html">Về chúng tôi</a></li>
                 </ul>
             </div>
             <div class="footer-links">
@@ -108,25 +82,38 @@ function buildFooter() {
     `;
 }
 
-// Bắt sự kiện DOM Load và đồng bộ Menu động
+// Kích hoạt khi trang web tải xong và lấy Menu Động
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         if (typeof API !== 'undefined') {
-            const catData = await API.getSettings('blog_categories');
-            if (catData) {
-                const parsedCats = JSON.parse(catData);
-                // Tìm menu Bài viết và tự động bơm các chuyên mục làm Menu con
+            // Nạp Danh mục Bài viết vào Menu
+            const blogData = await API.getSettings('blog_categories');
+            if (blogData) {
+                const parsedBlogCats = JSON.parse(blogData);
                 const blogMenuIndex = MENU_DATA.findIndex(m => m.url === 'bai-viet.html');
                 if (blogMenuIndex !== -1) {
-                    MENU_DATA[blogMenuIndex].children = parsedCats.map(c => ({
+                    MENU_DATA[blogMenuIndex].children = parsedBlogCats.map(c => ({
                         label: c.name,
                         url: `bai-viet.html?cat=${c.id}`
                     }));
                 }
             }
+
+            // Nạp Danh mục Sản phẩm vào Menu
+            const prodData = await API.getSettings('product_categories');
+            if (prodData) {
+                const parsedProdCats = JSON.parse(prodData);
+                const prodMenuIndex = MENU_DATA.findIndex(m => m.url === 'san-pham.html');
+                if (prodMenuIndex !== -1) {
+                    MENU_DATA[prodMenuIndex].children = parsedProdCats.map(c => ({
+                        label: c.name,
+                        url: `san-pham.html?sub=${c.id}`
+                    }));
+                }
+            }
         }
     } catch (e) {
-        console.error("Lỗi tải menu chuyên mục:", e);
+        console.error("Lỗi tải menu:", e);
     }
 
     buildNavigation();

@@ -6,10 +6,75 @@ let allProducts = [];
 let filteredProducts = []; 
 let currentPage = 1;
 const ITEMS_PER_PAGE = 50; 
+let productCategories = []; // Biến lưu trữ chuyên mục động
 
-// Hàm này sẽ được gọi tự động bởi admin-auth.js sau khi nhập đúng mật khẩu
 function initPageData() {
-    loadAdminProductList();
+    loadProductCategories().then(() => {
+        loadAdminProductList();
+    });
+}
+
+// ------------------------------------------
+// KHỐI QUẢN LÝ CHUYÊN MỤC SẢN PHẨM ĐỘNG
+// ------------------------------------------
+async function loadProductCategories() {
+    const catData = await API.getSettings('product_categories');
+    if (catData) {
+        productCategories = JSON.parse(catData);
+    } else {
+        // Mặc định khởi tạo vài chuyên mục nếu hệ thống mới
+        productCategories = [
+            { id: 'name-card', name: 'Name Card' },
+            { id: 'bia-folder', name: 'Bìa Folder Kẹp File' }
+        ];
+        await API.updateSettings('product_categories', JSON.stringify(productCategories));
+    }
+    renderCategorySelects();
+}
+
+function renderCategorySelects() {
+    const addSelect = document.getElementById('prodCategory');
+    const editSelect = document.getElementById('editProdCategory');
+    let html = '';
+    productCategories.forEach(cat => {
+        html += `<option value="${cat.id}">${cat.name}</option>`;
+    });
+    if (addSelect) addSelect.innerHTML = html;
+    if (editSelect) editSelect.innerHTML = html;
+}
+
+async function addNewProductCategory() {
+    const { value: catName } = await Swal.fire({
+        title: 'Thêm Chuyên Mục Sản Phẩm',
+        input: 'text',
+        inputPlaceholder: 'Ví dụ: Tem Nhãn Decal',
+        showCancelButton: true,
+        background: '#1e293b', color: '#fff',
+        confirmButtonColor: '#E65100',
+        confirmButtonText: 'Lưu Chuyên Mục',
+        cancelButtonText: 'Hủy'
+    });
+
+    if (catName && catName.trim() !== '') {
+        const cleanName = catName.trim();
+        const catId = cleanName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+
+        if (productCategories.find(c => c.id === catId)) {
+            showAlert("Lỗi", "Chuyên mục này đã tồn tại!", "error");
+            return;
+        }
+
+        productCategories.push({ id: catId, name: cleanName });
+        const success = await API.updateSettings('product_categories', JSON.stringify(productCategories));
+
+        if (success) {
+            renderCategorySelects();
+            document.getElementById('prodCategory').value = catId;
+            Swal.fire({title: "Thành công!", text: "Đã thêm chuyên mục mới.", icon: "success", background: '#1e293b', color: '#fff', timer: 1500, showConfirmButton: false});
+        } else {
+            showAlert("Lỗi", "Không thể lưu vào hệ thống!", "error");
+        }
+    }
 }
 
 // ------------------------------------------
@@ -58,10 +123,18 @@ function renderProductTable() {
     let rowsHTML = '';
     pageData.forEach(prod => {
         const formattedPrice = new Number(prod.price).toLocaleString('vi-VN') + ' đ';
+        
+        // Nhận diện chuyên mục
+        const catObj = productCategories.find(c => c.id === prod.category);
+        const catName = catObj ? catObj.name : 'Chưa phân loại';
+
         rowsHTML += `
             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); hover:background:rgba(255,255,255,0.01);">
                 <td style="padding: 15px 20px;"><img src="${prod.image_url}" style="width:50px; height:50px; object-fit:cover; border-radius:6px; border:1px solid rgba(255,255,255,0.1);"></td>
-                <td style="padding: 15px 20px; font-weight:600; color:#fff;">${prod.name}</td>
+                <td style="padding: 15px 20px;">
+                    <strong style="color:#fff; display:block; margin-bottom:5px;">${prod.name}</strong>
+                    <span style="color:var(--accent-glow); font-size:12px; font-weight:600;">📁 ${catName}</span>
+                </td>
                 <td style="padding: 15px 20px; color:#94a3b8; font-family:monospace;">${prod.slug}</td>
                 <td style="padding: 15px 20px; color:var(--accent-glow); font-weight:700;">${formattedPrice}</td>
                 <td style="padding: 15px 20px; text-align: right; white-space: nowrap;">
@@ -140,6 +213,7 @@ async function processSubmitProduct() {
     const btn = document.getElementById('submitBtn');
     const name = document.getElementById('prodName').value.trim();
     const slug = document.getElementById('prodSlug').value.trim().toLowerCase(); 
+    const category = document.getElementById('prodCategory').value; // Nạp Category
     const price = document.getElementById('prodPrice').value;
     const desc = document.getElementById('prodDesc').value.trim();
     const content = document.getElementById('prodContent').value.trim();
@@ -192,7 +266,7 @@ async function processSubmitProduct() {
         });
 
         const finalPayload = {
-            name: name, slug: slug, price: parseFloat(price), description: desc, content: content,
+            name: name, slug: slug, category: category, price: parseFloat(price), description: desc, content: content,
             specs: Object.keys(specsObj).length > 0 ? specsObj : null,
             price_tiers: tiersArr.length > 0 ? tiersArr : null,
             image_url: imageUrl,
@@ -222,6 +296,7 @@ async function prepareEditProduct(slug) {
     document.getElementById('editProdId').value = product.id;
     document.getElementById('editProdName').value = product.name;
     document.getElementById('editProdSlug').value = product.slug; 
+    document.getElementById('editProdCategory').value = product.category || '';
     document.getElementById('editProdPrice').value = product.price;
     document.getElementById('editProdDesc').value = product.description;
     document.getElementById('editProdContent').value = product.content || '';
@@ -261,6 +336,7 @@ async function processUpdateProduct() {
     const id = document.getElementById('editProdId').value; 
     const name = document.getElementById('editProdName').value.trim();
     const slug = document.getElementById('editProdSlug').value.trim().toLowerCase(); 
+    const category = document.getElementById('editProdCategory').value;
     const price = document.getElementById('editProdPrice').value;
     const desc = document.getElementById('editProdDesc').value.trim();
     const content = document.getElementById('editProdContent').value.trim();
@@ -318,7 +394,7 @@ async function processUpdateProduct() {
         });
 
         const finalPayload = {
-            id: id, name: name, slug: slug, price: parseFloat(price), description: desc, content: content,
+            id: id, name: name, slug: slug, category: category, price: parseFloat(price), description: desc, content: content,
             specs: Object.keys(specsObj).length > 0 ? specsObj : null,
             price_tiers: tiersArr.length > 0 ? tiersArr : null
         };
