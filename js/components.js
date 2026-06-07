@@ -54,7 +54,7 @@ function buildFooter() {
         <div class="footer-content">
             <div class="footer-about">
                 <h3>IN ẤN SẮC MÀU<span>.</span></h3>
-                <p>Xưởng in ấn và thiết kế quảng cáo chuyên nghiệp tại TP. Cao Lãnh, Đồng Tháp. Đồng hành định hình và củng cố sức mạnh thương hiệu từ năm 2017.</p>
+                <p>Xưởng in ấn và thiết kế quảng cáo chuyên nghiệp tại Cao Lãnh, Đồng Tháp. Đồng hành định hình và củng cố sức mạnh thương hiệu từ năm 2017.</p>
             </div>
             <div class="footer-links">
                 <h4>Dịch Vụ Nổi Bật</h4>
@@ -67,13 +67,13 @@ function buildFooter() {
             <div class="footer-links">
                 <h4>Liên Hệ Đặt Hàng</h4>
                 <ul>
-                    <li><a href="#">Địa chỉ: Nguyễn Văn Cừ, P.4, Cao Lãnh</a></li>
-                    <li><a href="#">Hotline 1: 0337.663.113 (Mrs Ly)</a></li>
-                    <li><a href="#">Hotline 2: 0399.221.753 (Mrs Ngọc)</a></li>
+                    <li><a target="_blank" href="https://maps.app.goo.gl/iyX39mu9HdS3rG3e6">Địa chỉ: 27, Nguyễn Văn Cừ, P.4, Cao Lãnh</a></li>
+                    <li><a href="tel:+84337663113">Hotline 1: 0337.663.113 (Mrs Ly)</a></li>
+                    <li><a href="tel:+84399221753">Hotline 2: 0399.221.753 (Mrs Nhung)</a></li>
                 </ul>
             </div>
         </div>
-        <div class="copyright">&copy; 2026 Hộ Kinh Doanh Sắc Màu Đồng Tháp. All rights reserved.</div>
+        <div class="copyright">&copy; 2026 Hộ Kinh Doanh Sắc Màu Đồng Tháp. All rights reserved. Since 2017</div>
     `;
 }
 
