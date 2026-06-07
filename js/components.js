@@ -85,7 +85,7 @@ function buildFooter() {
         <div class="footer-content">
             <div class="footer-about">
                 <h3>IN ẤN SẮC MÀU<span>.</span></h3>
-                <p>Xưởng in ấn và thiết kế quảng cáo chuyên nghiệp tại TP. Cao Lãnh, Đồng Tháp. Đồng hành định hình và củng cố sức mạnh thương hiệu từ năm 2017.</p>
+                <p>Xưởng in ấn và thiết kế quảng cáo chuyên nghiệp tại Cao Lãnh, Đồng Tháp. Đồng hành định hình và củng cố sức mạnh thương hiệu từ năm 2017.</p>
             </div>
             <div class="footer-links">
                 <h4>Dịch Vụ Nổi Bật</h4>
