@@ -380,7 +380,35 @@
     box-shadow: 0 10px 25px rgba(230, 81, 0, 0.4);
 }
 
-/* --- KỊCH BẢN HOẠT HÌNH KHÔNG TRỌNG LƯỢNG --- */
+/* ==========================================================================
+   BỔ SUNG HIỆU ỨNG ANTIGRAVITY & SECTION TRANG CHỦ (TÍCH HỢP)
+   ========================================================================== */
+
+/* --- Hiệu ứng cuộn trang mượt (Reveal on Scroll) --- */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.scroll-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Các vật thể trôi nổi liên tục */
+.antigravity-element {
+    animation: floatingGently 6s ease-in-out infinite alternate;
+}
+.delay-1 { animation-delay: 0s; }
+.delay-2 { animation-delay: 1.5s; }
+.delay-3 { animation-delay: 3s; }
+.delay-4 { animation-delay: 4.5s; }
+
+@keyframes floatingGently {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-15px); }
+}
+
 @keyframes floatOdd {
     0% { transform: translateY(-10px); }
     100% { transform: translateY(-25px); }
@@ -389,6 +417,165 @@
 @keyframes floatEven {
     0% { transform: translateY(25px); }
     100% { transform: translateY(10px); }
+}
+
+/* Thẻ nổi lên khi Hover */
+.float-hover:hover {
+    transform: translateY(-10px) scale(1.02);
+}
+
+/* Nút bấm Outline Glow */
+.btn-outline-glow {
+    display: inline-block;
+    padding: 14px 30px;
+    border: 2px solid var(--accent);
+    color: var(--accent-glow);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.3s;
+    background: transparent;
+}
+.btn-outline-glow:hover {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(230, 81, 0, 0.4);
+}
+
+/* --- KHU VỰC VỀ CHÚNG TÔI (ABOUT) --- */
+.about-section {
+    padding: 80px 20px;
+    background: linear-gradient(180deg, transparent, rgba(230, 81, 0, 0.03), transparent);
+}
+.about-grid {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.about-text {
+    flex: 1;
+}
+.about-text p {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 25px;
+    text-align: justify;
+}
+.about-image-stack {
+    flex: 1;
+    position: relative;
+    height: 400px;
+    perspective: 1000px;
+}
+/* ==========================================================================
+   BẢN VÁ NÂNG CẤP (ẢNH GIỚI THIỆU & HIỆU ỨNG CLICK CHUYỂN CẢNH)
+   ========================================================================== */
+
+/* 1. Xử lý triệt để lỗi ảnh Giới thiệu chồng mờ */
+.img-float {
+    position: absolute;
+    border-radius: 16px;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--glossy-border-top);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    animation: floatingGently 5s ease-in-out infinite alternate;
+    background-color: rgba(255,255,255,0.05); /* Màu lót dự phòng nếu chưa có ảnh */
+}
+
+.back-img {
+    width: 70%;
+    height: 300px;
+    top: 20px;
+    right: 0;
+    opacity: 0.85; /* Tăng độ sáng */
+    z-index: 1;
+    animation-delay: 2s;
+}
+
+.front-img {
+    width: 75%;
+    height: 320px;
+    bottom: 20px;
+    left: 0;
+    z-index: 2;
+    backdrop-filter: none !important; /* GỠ BỎ TÍNH NĂNG KÍNH MỜ GÂY LỖI TRÌNH DUYỆT */
+    box-shadow: 0 25px 50px rgba(0,0,0,0.8); /* Bóng đổ cực mạnh để tách hẳn khỏi nền */
+}
+
+/* 2. Hiệu ứng HÚT VÀO TRONG khi click vào sản phẩm */
+.clicked-animate {
+    transform: scale(0.85) translateY(20px) !important;
+    opacity: 0 !important;
+    filter: blur(10px) !important;
+    transition: all 0.4s cubic-bezier(0.5, 0, 0.2, 1) !important;
+    pointer-events: none; /* Khóa click nhấp nháy */
+}
+
+/* --- KHU VỰC BLOG LƯỚI TRANG CHỦ --- */
+.blog-preview-section {
+    padding: 80px 20px 120px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.home-blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+.home-blog-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: 0.3s;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+}
+.home-blog-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent);
+    box-shadow: 0 15px 30px rgba(230, 81, 0, 0.15);
+}
+.home-blog-thumb {
+    width: 100%;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+}
+.home-blog-info {
+    padding: 20px;
+}
+.home-blog-info h4 {
+    color: #fff;
+    margin: 0 0 10px;
+    font-size: 16px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.home-blog-info p {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0 0 15px;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.home-blog-info span {
+    color: var(--accent-glow);
+    font-size: 12px;
+    font-weight: 600;
 }
 
 /* --- RESPONSIVE BREAKPOINTS CO GIÃN --- */
@@ -411,4 +598,78 @@
     }
     .stats-layout-grid { grid-template-columns: 1fr; }
     .services-display-grid { grid-template-columns: 1fr; }
+    
+    .about-grid { flex-direction: column; }
+    .about-image-stack { width: 100%; height: 300px; }
+    .home-blog-grid { grid-template-columns: 1fr; }
+}
+/* ==========================================================================
+   BẢN VÁ LỖI HIỂN THỊ (MODAL BÁO GIÁ & ẢNH GIỚI THIỆU)
+   ========================================================================== */
+
+/* 1. SỬA LỖI ẢNH CHỒNG MỜ (Bỏ backdrop-filter để hình ảnh hiển thị rõ nét) */
+.front-img {
+    width: 75%;
+    height: 320px;
+    bottom: 20px;
+    left: 0;
+    background-image: url('https://images.unsplash.com/photo-1626785724573-4b799315345d?auto=format&fit=crop&q=80'); 
+    z-index: 2;
+    /* Đã gỡ bỏ backdrop-filter gây lỗi vỡ hình */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6); /* Tăng bóng đổ để tách lớp 3D rỏ hơn */
+}
+
+/* 2. SỬA LỖI KHUNG POPUP BÁO GIÁ BỊ LỆCH VÀ DỒN CỤC */
+/* Căn giữa tuyệt đối cho màn hình mờ tối (Overlay) */
+.modal-overlay {
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background: rgba(0, 0, 0, 0.75); 
+    z-index: 9999; 
+    align-items: center; 
+    justify-content: center; 
+    backdrop-filter: blur(8px);
+}
+
+/* Định dạng cấu trúc cho từng hàng nhập liệu */
+.form-row-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* Định dạng nhãn chữ (Tên, SĐT, Ghi chú) */
+.form-row-group label {
+    font-size: 13px;
+    color: #cbd5e1;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: none; /* Bỏ in hoa toàn bộ để dễ đọc hơn */
+}
+
+/* Tráng kính cho ô nhập liệu (Input & Textarea) */
+.form-row-group input, 
+.form-row-group textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    padding: 14px 15px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+/* Hiệu ứng khi bấm vào ô nhập liệu sẽ sáng viền cam */
+.form-row-group input:focus, 
+.form-row-group textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 10px rgba(230, 81, 0, 0.2);
 }

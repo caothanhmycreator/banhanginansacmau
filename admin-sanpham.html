@@ -108,6 +108,10 @@
                         <textarea id="prodContent" rows="8"></textarea>
                     </div>
                 </div>
+                    <div class="form-group full-width" style="background: rgba(230, 81, 0, 0.1); padding: 15px; border-radius: 8px; border: 1px dashed var(--accent); display: flex; flex-direction: row; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="prodFeatured" style="width: 20px; height: 20px; cursor: pointer; margin: 0;">
+                        <label for="prodFeatured" style="color: #fff; margin: 0; cursor: pointer; font-size: 14px;">🌟 Đánh dấu làm "Sản Phẩm Nổi Bật" (Hiển thị lên Trang Chủ)</label>
+                    </div>
                 <button type="button" class="btn-submit" id="submitBtn" onclick="processSubmitProduct()">Lưu và phát hành sản phẩm</button>
             </form>
 
@@ -162,6 +166,11 @@
                     <div class="form-group"><label>Thông số kỹ thuật</label><div id="edit-specs-container"></div><button type="button" class="btn-add" onclick="addEditSpecRow()">+ Thêm</button></div>
                     <div class="form-group"><label>Bảng giá</label><div id="edit-tiers-container"></div><button type="button" class="btn-add" onclick="addEditTierRow()">+ Thêm</button></div>
                     <div class="form-group full-width"><label>Nội dung chi tiết</label><textarea id="editProdContent" rows="8"></textarea></div>
+                    
+                    <div class="form-group full-width" style="background: rgba(230, 81, 0, 0.1); padding: 15px; border-radius: 8px; border: 1px dashed var(--accent); display: flex; flex-direction: row; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="editProdFeatured" style="width: 20px; height: 20px; cursor: pointer; margin: 0;">
+                        <label for="editProdFeatured" style="color: #fff; margin: 0; cursor: pointer; font-size: 14px;">🌟 Đánh dấu làm "Sản Phẩm Nổi Bật" (Hiển thị lên Trang Chủ)</label>
+                    </div>
                 </div>
                 <button type="button" class="btn-submit" id="btnUpdateProduct" onclick="processUpdateProduct()">LƯU THAY ĐỔI</button>
             </form>
