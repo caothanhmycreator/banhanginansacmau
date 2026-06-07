@@ -5,10 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Trị - In Ấn Sắc Màu</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
+
+    <div id="login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <div style="background: rgba(255,255,255,0.02); padding: 40px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
+            <h2 style="color: #fff; margin-top: 0; font-size: 28px; font-weight: 900;">SẮC MÀU <span style="color: #E65100;">CMS</span></h2>
+            <p style="color: #94a3b8; margin-bottom: 30px; font-size: 14px;">Vui lòng nhập mật khẩu quản trị</p>
+            <input type="password" id="adminPassword" placeholder="Nhập mật khẩu..." style="width: 100%; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: #fff; margin-bottom: 20px; box-sizing: border-box; font-family: inherit;">
+            <button onclick="checkAdminLogin()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #E65100 0%, #ff8a65 100%); color: #fff; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(230, 81, 0, 0.4);">ĐĂNG NHẬP</button>
+        </div>
+    </div>
 
     <aside>
         <h2>SẮC MÀU <span>CMS</span></h2>
@@ -19,17 +27,16 @@
             <li class="nav-item" onclick="switchTab('tab-intro', this)">Sửa Giới Thiệu</li>
             <li class="nav-item" onclick="switchTab('tab-contact', this)">Thông Tin Liên Hệ</li>
         </ul>
-        <div style="margin-top: auto; font-size: 11px; color: #475569; text-align: center;">Chế độ bảo mật Admin</div>
+        <div style="margin-top: auto; text-align: center;">
+            <button onclick="adminLogout()" style="background: transparent; color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: 0.2s;">Đăng Xuất</button>
+        </div>
     </aside>
 
     <main>
-        
         <div id="tab-products" class="panel active">
-            
             <h3>Đăng Sản Phẩm Cao Cấp</h3>
             <form id="productForm">
                 <input type="hidden" id="prodId" value="">
-
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Tên sản phẩm</label>
@@ -47,17 +54,14 @@
                         <label>Ảnh đại diện sản phẩm</label>
                         <input type="file" id="prodImage" accept="image/*">
                     </div>
-                    
                     <div class="form-group full-width">
                         <label>Thư viện ảnh sản phẩm (Chọn nhiều ảnh cùng lúc)</label>
                         <input type="file" id="prodGallery" accept="image/*" multiple> 
                     </div>
-                    
                     <div class="form-group full-width">
                         <label>Mô tả tóm tắt ngắn</label>
                         <textarea id="prodDesc" rows="2" placeholder="Hiển thị ở lưới sản phẩm ngoài trang chủ..." required></textarea>
                     </div>
-                    
                     <div class="form-group">
                         <label>Thông số kỹ thuật (Kích thước, Chất liệu...)</label>
                         <div id="specs-container">
@@ -68,7 +72,6 @@
                         </div>
                         <button type="button" class="btn-add" onclick="addSpecRow()">+ Thêm Dòng Thông Số</button>
                     </div>
-
                     <div class="form-group">
                         <label>Bảng phân loại giá theo số lượng</label>
                         <div id="tiers-container">
@@ -79,7 +82,6 @@
                         </div>
                         <button type="button" class="btn-add" onclick="addTierRow()">+ Thêm Gói Giá</button>
                     </div>
-
                     <div class="form-group full-width">
                         <label>Bài viết thuyết minh chi tiết sản phẩm (Hỗ trợ nhập mã HTML)</label>
                         <textarea id="prodContent" rows="8" placeholder="Viết bài phân tích chi tiết vật liệu, ưu nhược điểm, hướng dẫn đặt hàng..."></textarea>
@@ -89,12 +91,10 @@
             </form>
 
             <div style="margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 40px;">
-                
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
                     <h3 style="font-size: 22px; margin: 0; font-weight: 800;">Danh Sách Sản Phẩm Hiện Có</h3>
                     <input type="text" id="searchProductInput" onkeyup="filterProducts()" placeholder="🔍 Tìm tên hoặc mã sản phẩm..." style="width: 100%; max-width: 350px; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: #fff;">
                 </div>
-
                 <div style="overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border-color);">
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
                         <thead>
@@ -106,11 +106,9 @@
                                 <th style="padding: 15px 20px; text-align: right; width: 160px;">Thao tác</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-product-list">
-                            </tbody>
+                        <tbody id="admin-product-list"></tbody>
                     </table>
                 </div>
-
                 <div id="productPagination" style="display: flex; justify-content: center; gap: 8px; margin-top: 25px;"></div>
             </div>
         </div>
@@ -137,7 +135,51 @@
 
         <div id="tab-posts" class="panel">
             <h3>Đăng Bài Viết Kiến Thức & Thiết Kế</h3>
-            <p style="color: #94a3b8;">Hệ thống form đăng bài đang kết nối đồng bộ sẵn sàng...</p>
+            <form id="postForm">
+                <input type="hidden" id="postId" value="">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Tiêu đề bài viết</label>
+                        <input type="text" id="postTitle" placeholder="Ví dụ: 5 Lưu Ý Khi In Bìa Folder" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mã ID Bài Viết (Slug - Viết liền không dấu)</label>
+                        <input type="text" id="postSlug" placeholder="Ví dụ: 5-luu-y-in-bia-folder" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ảnh bìa bài viết</label>
+                        <input type="file" id="postImage" accept="image/*">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Trích dẫn ngắn (Hiển thị ở lưới danh sách)</label>
+                        <textarea id="postExcerpt" rows="2" placeholder="Một đoạn tóm tắt hấp dẫn..." required></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Nội dung chi tiết (Hỗ trợ nhúng mã HTML, thẻ <strong>, <img>...)</label>
+                        <textarea id="postContent" rows="10" placeholder="Viết nội dung bài Blog vào đây..."></textarea>
+                    </div>
+                </div>
+                <button type="button" class="btn-submit" id="btnSubmitPost" onclick="processSubmitPost()">Lưu Và Đăng Bài</button>
+            </form>
+
+            <div style="margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 40px;">
+                <h3 style="font-size: 22px; margin-top: 0; margin-bottom: 20px; font-weight: 800;">Danh Sách Bài Viết Blog</h3>
+                <div style="overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border-color);">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #94a3b8;">
+                                <th style="padding: 15px 20px; width: 100px;">Ảnh bìa</th>
+                                <th style="padding: 15px 20px;">Tiêu đề bài viết</th>
+                                <th style="padding: 15px 20px;">Mã Slug</th>
+                                <th style="padding: 15px 20px; text-align: right; width: 160px;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-post-list">
+                            <tr><td colspan="4" style="padding: 20px; text-align: center; color: #94a3b8;">Đang tải danh sách bài viết...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <div id="tab-intro" class="panel">
@@ -148,7 +190,7 @@
                     <input type="text" id="introTitle" placeholder="Ví dụ: Về Chúng Tôi - Xưởng In Sắc Màu" required>
                 </div>
                 <div class="form-group full-width" style="margin-bottom: 20px;">
-                    <label>Nội dung bài viết (Hỗ trợ mã HTML để in đậm, xuống dòng...)</label>
+                    <label>Nội dung bài viết (Hỗ trợ mã HTML)</label>
                     <textarea id="introContent" rows="8" placeholder="Viết câu chuyện thương hiệu của sếp vào đây..."></textarea>
                 </div>
                 <div class="form-group full-width" style="margin-bottom: 20px;">
@@ -159,11 +201,11 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Khung Thông Tin Liên Hệ</label>
-                        <textarea id="introContact" rows="5" placeholder="Địa chỉ: ...&#10;Hotline: ...&#10;Email: ..."></textarea>
+                        <textarea id="introContact" rows="5" placeholder="Địa chỉ: ..."></textarea>
                     </div>
                     <div class="form-group">
                         <label>Mã nhúng Bản Đồ (Google Maps Iframe)</label>
-                        <textarea id="introMap" rows="5" placeholder='Dán thẻ <iframe src="..."> lấy từ Google Maps vào đây'></textarea>
+                        <textarea id="introMap" rows="5" placeholder='Dán thẻ <iframe src="...">'></textarea>
                     </div>
                 </div>
                 <button type="button" class="btn-submit" id="btnSaveIntro" onclick="saveIntroData()">LƯU CẤU HÌNH TRANG GIỚI THIỆU</button>
@@ -178,54 +220,18 @@
         <div class="modal-content" style="background: var(--bg-admin); border: 1px solid var(--primary); padding: 35px; border-radius: 16px; width: 95%; max-width: 1050px; max-height: 85vh; overflow-y:auto; position: relative;">
             <span class="close-modal" onclick="document.getElementById('editProductModal').style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; color: #94a3b8; cursor: pointer;">&times;</span>
             <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; font-size: 20px;">Cập Nhật Thông Tin Sản Phẩm</h3>
-            
             <form id="editProductForm">
                 <input type="hidden" id="editProdId" value="">
-
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Tên sản phẩm</label>
-                        <input type="text" id="editProdName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Mã ID tùy chỉnh (Slug viết liền không dấu - KO TRÙNG)</label>
-                        <input type="text" id="editProdSlug" required placeholder="Ví dụ: bia-folder-a4-moi">
-                    </div>
-                    <div class="form-group">
-                        <label>Giá hiển thị cơ bản (VNĐ)</label>
-                        <input type="number" id="editProdPrice" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Ảnh đại diện (Để trống nếu giữ nguyên ảnh cũ)</label>
-                        <input type="file" id="editProdImage" accept="image/*">
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label>Thư viện ảnh (Để trống nếu giữ nguyên kho ảnh cũ)</label>
-                        <input type="file" id="editProdGallery" accept="image/*" multiple> 
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label>Mô tả tóm tắt ngắn</label>
-                        <textarea id="editProdDesc" rows="2" required></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Thông số kỹ thuật</label>
-                        <div id="edit-specs-container"></div>
-                        <button type="button" class="btn-add" onclick="addEditSpecRow()">+ Thêm Dòng Thông Số</button>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Bảng phân loại giá theo số lượng</label>
-                        <div id="edit-tiers-container"></div>
-                        <button type="button" class="btn-add" onclick="addEditTierRow()">+ Thêm Gói Giá</button>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label>Bài viết chi tiết sản phẩm (Hỗ trợ HTML)</label>
-                        <textarea id="editProdContent" rows="8"></textarea>
-                    </div>
+                    <div class="form-group"><label>Tên sản phẩm</label><input type="text" id="editProdName" required></div>
+                    <div class="form-group"><label>Mã ID tùy chỉnh</label><input type="text" id="editProdSlug" required></div>
+                    <div class="form-group"><label>Giá hiển thị cơ bản</label><input type="number" id="editProdPrice" required></div>
+                    <div class="form-group"><label>Ảnh đại diện</label><input type="file" id="editProdImage" accept="image/*"></div>
+                    <div class="form-group full-width"><label>Thư viện ảnh</label><input type="file" id="editProdGallery" accept="image/*" multiple></div>
+                    <div class="form-group full-width"><label>Mô tả tóm tắt ngắn</label><textarea id="editProdDesc" rows="2" required></textarea></div>
+                    <div class="form-group"><label>Thông số kỹ thuật</label><div id="edit-specs-container"></div><button type="button" class="btn-add" onclick="addEditSpecRow()">+ Thêm Dòng</button></div>
+                    <div class="form-group"><label>Bảng phân loại giá</label><div id="edit-tiers-container"></div><button type="button" class="btn-add" onclick="addEditTierRow()">+ Thêm Gói</button></div>
+                    <div class="form-group full-width"><label>Bài viết chi tiết sản phẩm</label><textarea id="editProdContent" rows="8"></textarea></div>
                 </div>
                 <button type="button" class="btn-submit" id="btnUpdateProduct" onclick="processUpdateProduct()">LƯU THAY ĐỔI</button>
             </form>
@@ -236,22 +242,45 @@
         <div class="modal-content" style="background: var(--bg-admin); border: 1px solid var(--primary); padding: 35px; border-radius: 16px; width: 90%; max-width: 500px; position: relative;">
             <span class="close-modal" onclick="document.getElementById('editOrderModal').style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; color: #94a3b8; cursor: pointer;">&times;</span>
             <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; font-size: 20px;">Chỉnh Sửa Đơn Hàng</h3>
-            
             <input type="hidden" id="editOrderId">
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label>Tên Khách Hàng</label>
-                <input type="text" id="editOrderName" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 12px 15px; border-radius: 8px; color: #fff;">
-            </div>
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label>Số Điện Thoại / Zalo</label>
-                <input type="text" id="editOrderPhone" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 12px 15px; border-radius: 8px; color: #fff;">
-            </div>
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label>Ghi chú của Admin (Khách không thấy)</label>
-                <textarea id="editOrderAdminNote" rows="3" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 12px 15px; border-radius: 8px; color: #fff;" placeholder="Ghi chú nội bộ quá trình xử lý..."></textarea>
-            </div>
-            
+            <div class="form-group" style="margin-bottom: 15px;"><label>Tên Khách Hàng</label><input type="text" id="editOrderName"></div>
+            <div class="form-group" style="margin-bottom: 15px;"><label>Số Điện Thoại / Zalo</label><input type="text" id="editOrderPhone"></div>
+            <div class="form-group" style="margin-bottom: 15px;"><label>Ghi chú của Admin</label><textarea id="editOrderAdminNote" rows="3"></textarea></div>
             <button type="button" class="btn-submit" onclick="processUpdateOrder()" style="width: 100%; margin-top: 10px;">LƯU THAY ĐỔI</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editPostModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div class="modal-content" style="background: var(--bg-admin); border: 1px solid var(--primary); padding: 35px; border-radius: 16px; width: 95%; max-width: 900px; max-height: 85vh; overflow-y:auto; position: relative;">
+            <span class="close-modal" onclick="document.getElementById('editPostModal').style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 28px; color: #94a3b8; cursor: pointer;">&times;</span>
+            <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; font-size: 20px;">Cập Nhật Bài Viết</h3>
+            
+            <form id="editPostForm">
+                <input type="hidden" id="editPostId" value="">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Tiêu đề bài viết</label>
+                        <input type="text" id="editPostTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mã ID Bài Viết (Slug)</label>
+                        <input type="text" id="editPostSlug" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ảnh bìa (Để trống nếu không đổi)</label>
+                        <input type="file" id="editPostImage" accept="image/*">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Trích dẫn ngắn</label>
+                        <textarea id="editPostExcerpt" rows="2" required></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Nội dung chi tiết (Hỗ trợ HTML)</label>
+                        <textarea id="editPostContent" rows="10"></textarea>
+                    </div>
+                </div>
+                <button type="button" class="btn-submit" id="btnUpdatePost" onclick="processUpdatePost()">LƯU BÀI VIẾT</button>
+            </form>
         </div>
     </div>
 

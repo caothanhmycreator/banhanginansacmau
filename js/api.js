@@ -149,5 +149,28 @@ const API = {
             return false;
         }
         return true;
+    },
+    // --- GIAO TIẾP DỮ LIỆU BLOG (BÀI VIẾT) ---
+    async getPosts() {
+        const { data, error } = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false });
+        if (error) { console.error('Lỗi lấy bài viết:', error); return []; }
+        return data;
+    },
+    async getPostBySlug(slug) {
+        const { data, error } = await supabaseClient.from('posts').select('*').eq('slug', slug).maybeSingle();
+        if (error) { console.error('Lỗi lấy bài viết:', error); return null; }
+        return data;
+    },
+    async savePost(payload) {
+        if (payload.id) {
+            return await supabaseClient.from('posts').update(payload).eq('id', payload.id);
+        } else {
+            return await supabaseClient.from('posts').insert([payload]);
+        }
+    },
+    async deletePost(id) {
+        const { error } = await supabaseClient.from('posts').delete().eq('id', id);
+        if (error) { console.error('Lỗi xóa bài viết:', error); return false; }
+        return true;
     }
 }; // Đóng const API
