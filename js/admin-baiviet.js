@@ -1,13 +1,74 @@
 // ==========================================
-// BỘ NÃO ĐIỀU KHIỂN TRANG BÀI VIẾT (BLOG)
+// BỘ NÃO ĐIỀU KHIỂN TRANG BÀI VIẾT (DYNAMIC CATEGORY)
 // ==========================================
 
 let allPosts = [];
+let blogCategories = [];
 
-// Khởi chạy khi admin vượt qua vòng đăng nhập
-function initPageData() {
+async function initPageData() {
+    await loadCategories(); // Nạp chuyên mục từ CSDL trước
     initRichTextEditor();
     loadAdminPostList();
+}
+
+// KHỐI QUẢN LÝ CHUYÊN MỤC ĐỘNG
+async function loadCategories() {
+    const catData = await API.getSettings('blog_categories');
+    if (catData) {
+        blogCategories = JSON.parse(catData);
+    } else {
+        // Tạo mặc định lần đầu nếu chưa có gì
+        blogCategories = [
+            { id: 'kien-thuc', name: 'Kiến thức in ấn' },
+            { id: 'ky-nang', name: 'Kỹ năng thiết kế' }
+        ];
+        await API.updateSettings('blog_categories', JSON.stringify(blogCategories));
+    }
+    renderCategorySelect();
+}
+
+function renderCategorySelect() {
+    const select = document.getElementById('postCategory');
+    if (!select) return;
+    select.innerHTML = '';
+    blogCategories.forEach(cat => {
+        select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+    });
+}
+
+async function addNewCategory() {
+    const { value: catName } = await Swal.fire({
+        title: 'Thêm Chuyên Mục Mới',
+        input: 'text',
+        inputPlaceholder: 'Ví dụ: Tin tức xưởng',
+        showCancelButton: true,
+        background: '#1e293b', color: '#fff',
+        confirmButtonColor: '#E65100',
+        confirmButtonText: 'Lưu Chuyên Mục',
+        cancelButtonText: 'Hủy'
+    });
+
+    if (catName && catName.trim() !== '') {
+        const cleanName = catName.trim();
+        // Tự động tạo mã không dấu (Slug) từ tên chuyên mục
+        const catId = cleanName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+        
+        if (blogCategories.find(c => c.id === catId)) {
+            showAlert("Lỗi", "Chuyên mục này đã tồn tại rồi sếp ơi!", "error");
+            return;
+        }
+
+        blogCategories.push({ id: catId, name: cleanName });
+        const success = await API.updateSettings('blog_categories', JSON.stringify(blogCategories));
+        
+        if (success) {
+            renderCategorySelect();
+            document.getElementById('postCategory').value = catId; // Tự động chọn mục vừa tạo
+            Swal.fire({title: "Thành công!", text: "Đã thêm chuyên mục mới.", icon: "success", background: '#1e293b', color: '#fff', timer: 1500, showConfirmButton: false});
+        } else {
+            showAlert("Lỗi", "Không thể lưu vào hệ thống!", "error");
+        }
+    }
 }
 
 // 1. KHỞI TẠO TRÌNH SOẠN THẢO TINYMCE
@@ -21,18 +82,12 @@ function initRichTextEditor() {
         toolbar: 'undo redo | fontfamily fontsize | bold italic underline forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image media | code preview',
         font_size_formats: '8px 10px 12px 14px 16px 18px 24px 36px 48px',
         font_family_formats: 'Montserrat=Montserrat,sans-serif; Arial=arial,helvetica,sans-serif; Tahoma=tahoma,arial,helvetica,sans-serif; Times New Roman=times new roman,times;',
-        
-        // CẤU HÌNH LIÊN KẾT UPLOAD ẢNH VỚI SUPABASE CỦA SẾP
         images_upload_handler: async (blobInfo, progress) => {
             try {
                 const file = blobInfo.blob();
-                // Gọi hàm uploadImage có sẵn trong api.js, lưu vào folder 'posts'
                 const url = await API.uploadImage(file, 'posts/images');
-                if (url) {
-                    return url; // Trả link ảnh về cho trình soạn thảo tự chèn
-                } else {
-                    throw new Error('Upload ảnh thất bại!');
-                }
+                if (url) return url;
+                else throw new Error('Upload ảnh thất bại!');
             } catch (err) {
                 console.error(err);
                 throw err;
@@ -58,6 +113,10 @@ async function loadAdminPostList() {
         const dateObj = new Date(post.created_at);
         const formattedDate = dateObj.toLocaleDateString('vi-VN');
         
+        // Nhận diện tên chuyên mục động
+        const catObj = blogCategories.find(c => c.id === post.category);
+        const catName = catObj ? catObj.name : 'Chưa phân loại';
+        
         rowsHTML += `
             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 15px 20px;">
@@ -65,6 +124,7 @@ async function loadAdminPostList() {
                 </td>
                 <td style="padding: 15px 20px;">
                     <strong style="color:#fff; display:block; margin-bottom:5px;">${post.title}</strong>
+                    <span style="color:var(--accent-glow); font-size:12px; font-weight:600; margin-right:15px;">📁 ${catName}</span>
                     <span style="color:#94a3b8; font-size:12px; font-family:monospace;">${post.slug}</span>
                 </td>
                 <td style="padding: 15px 20px; color:#cbd5e1; font-size: 13px;">${formattedDate}</td>
@@ -84,9 +144,8 @@ async function processSubmitPost() {
     const id = document.getElementById('postId').value;
     const title = document.getElementById('postTitle').value.trim();
     const slug = document.getElementById('postSlug').value.trim().toLowerCase();
+    const category = document.getElementById('postCategory').value;
     const excerpt = document.getElementById('postExcerpt').value.trim();
-    
-    // Lấy nội dung HTML siêu to khổng lồ từ TinyMCE
     const content = tinymce.get('postContent').getContent();
     const imageFile = document.getElementById('postImage').files[0];
 
@@ -95,7 +154,6 @@ async function processSubmitPost() {
         return;
     }
 
-    // Nếu đăng mới thì bắt buộc phải có ảnh bìa
     if (!id && !imageFile) {
         showAlert("Thiếu ảnh bìa", "Bài viết mới cần có ảnh bìa (Thumbnail) để hiển thị ngoài web!", "warning");
         return;
@@ -105,7 +163,6 @@ async function processSubmitPost() {
     btn.disabled = true;
 
     try {
-        // Kiểm tra trùng Slug (nếu đăng mới hoặc sửa mã khác)
         if (!id || (id && allPosts.find(p => p.id === id).slug !== slug)) {
             const existingPost = await API.getPostBySlug(slug);
             if (existingPost) {
@@ -124,11 +181,11 @@ async function processSubmitPost() {
         const payload = {
             title: title,
             slug: slug,
+            category: category,
             excerpt: excerpt,
             content: content
         };
         
-        // Chỉ thêm/đổi ảnh bìa nếu có file mới được chọn
         if (imageUrl) payload.image_url = imageUrl;
         if (id) payload.id = id;
 
@@ -140,12 +197,10 @@ async function processSubmitPost() {
         } else {
             Swal.fire({ title: "Thành công!", text: "Đã lưu bài viết!", icon: "success", background: '#1e293b', color: '#fff', confirmButtonColor: '#E65100' });
             
-            // Reset form
             document.getElementById('postForm').reset();
             document.getElementById('postId').value = '';
             tinymce.get('postContent').setContent('');
             
-            // Cuộn lên và tải lại list
             window.scrollTo(0, 0);
             loadAdminPostList();
         }
@@ -166,12 +221,12 @@ async function prepareEditPost(slug) {
     document.getElementById('postId').value = post.id;
     document.getElementById('postTitle').value = post.title;
     document.getElementById('postSlug').value = post.slug;
+    
+    // Đẩy chuyên mục về form
+    document.getElementById('postCategory').value = post.category || (blogCategories[0] ? blogCategories[0].id : '');
     document.getElementById('postExcerpt').value = post.excerpt;
     
-    // Đẩy nội dung vào lại TinyMCE
     tinymce.get('postContent').setContent(post.content || '');
-    
-    // Reset file input ảnh
     document.getElementById('postImage').value = '';
 
     window.scrollTo({ top: 0, behavior: 'smooth' });

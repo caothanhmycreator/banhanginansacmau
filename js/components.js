@@ -1,4 +1,4 @@
-// 1. Cấu hình cây Menu 3 cấp khoa học (Dễ dàng thêm bớt sau này)
+// 1. Cấu hình cây Menu 3 cấp (Chuyên mục Bài Viết sẽ được tạo tự động)
 const MENU_DATA = [
     { label: 'Trang Chủ', url: 'index.html' },
     { label: 'Giới Thiệu', url: 'gioi-thieu.html' },
@@ -21,7 +21,6 @@ const MENU_DATA = [
                     { label: 'Tem nhãn', url: 'san-pham.html?sub=tem' },
                     { label: 'Menu', url: 'san-pham.html?sub=menu' },
                     { label: 'Bảng tên', url: 'san-pham.html?sub=bang-ten' },
-
                 ]
             },
             { 
@@ -39,15 +38,11 @@ const MENU_DATA = [
     { 
         label: 'Bài Viết', 
         url: 'bai-viet.html',
-        children: [
-            { label: 'Kiến thức in ấn', url: 'bai-viet.html?cat=kien-thuc' },
-            { label: 'Kỹ năng thiết kế', url: 'bai-viet.html?cat=ky-nang' }
-        ]
+        children: [] // Trống để JavaScript tự nhúng từ Database vào
     },
     { label: 'Liên Hệ', url: 'lien-he.html' }
 ];
 
-// 2. Hàm tự động vẽ Menu ra giao diện
 function buildNavigation() {
     const headerNode = document.getElementById('dynamic-header');
     if (!headerNode) return;
@@ -82,7 +77,6 @@ function buildNavigation() {
     headerNode.innerHTML = menuHTML;
 }
 
-// 3. Hàm tự động vẽ Footer ra giao diện
 function buildFooter() {
     const footerNode = document.getElementById('dynamic-footer');
     if (!footerNode) return;
@@ -114,8 +108,27 @@ function buildFooter() {
     `;
 }
 
-// Kích hoạt khi trang web tải xong
-document.addEventListener('DOMContentLoaded', () => {
+// Bắt sự kiện DOM Load và đồng bộ Menu động
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        if (typeof API !== 'undefined') {
+            const catData = await API.getSettings('blog_categories');
+            if (catData) {
+                const parsedCats = JSON.parse(catData);
+                // Tìm menu Bài viết và tự động bơm các chuyên mục làm Menu con
+                const blogMenuIndex = MENU_DATA.findIndex(m => m.url === 'bai-viet.html');
+                if (blogMenuIndex !== -1) {
+                    MENU_DATA[blogMenuIndex].children = parsedCats.map(c => ({
+                        label: c.name,
+                        url: `bai-viet.html?cat=${c.id}`
+                    }));
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Lỗi tải menu chuyên mục:", e);
+    }
+
     buildNavigation();
     buildFooter();
 });

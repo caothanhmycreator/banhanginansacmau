@@ -200,3 +200,29 @@
     .side-post-card .side-img { width: 100%; height: 140px; }
     .posts-grid { grid-template-columns: 1fr; }
 }
+/* ==========================================
+   TÙY CHỈNH NÚT "ĐỌC BÀI VIẾT"
+   ========================================== */
+.grid-post-card .btn-view {
+    display: block;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff; /* Màu chữ trắng mượt mà */
+    text-decoration: none; /* Xóa dấu gạch chân xấu xí */
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+/* Hiệu ứng phát sáng màu cam khi khách hàng rê chuột vào bài viết */
+.grid-post-card:hover .btn-view {
+    background: var(--accent);
+    border-color: var(--accent-glow);
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(230, 81, 0, 0.3);
+}
