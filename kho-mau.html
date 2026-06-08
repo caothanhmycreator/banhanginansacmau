@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kho Mẫu Thiết Kế - In Ấn Sắc Màu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/product.css">
+    
+    <style>
+        .wedding-hero { text-align: center; padding: 140px 20px 40px; }
+        .wedding-hero h1 { font-size: 38px; color: #fff; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; }
+        .wedding-hero h1 span { color: var(--accent-glow); }
+        .drive-container { margin: 0 auto 60px; max-width: 1000px; text-align: center; background: var(--glossy-bg); padding: 40px 30px; border-radius: 16px; border-top: 1px solid var(--glossy-border-top); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .order-section { max-width: 800px; margin: 0 auto 80px; }
+    </style>
+</head>
+<body>
+
+    <header id="dynamic-header"></header>
+
+    <div id="loading" style="text-align:center; padding: 150px; color: var(--accent-glow); font-weight:bold; font-size: 18px;">
+        Đang đồng bộ kho mẫu từ Google Drive...
+    </div>
+
+    <main class="weightless-wrapper" id="main-content" style="display: none;">
+        
+        <section class="wedding-hero">
+            <h1 id="gal-title">BỘ SƯU TẬP <span>...</span></h1>
+            <p id="gal-desc" style="color: var(--text-muted); font-size: 16px; max-width: 650px; margin: 0 auto; line-height: 1.6;">...</p>
+        </section>
+
+        <section class="drive-container">
+            <h3 style="margin-top: 0; color: #fff; font-size: 24px; font-weight: 800; margin-bottom: 20px;">Khám Phá Trọn Bộ Mẫu Mã</h3>
+            
+            <div id="iframe-container" style="width: 100%; height: 650px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: #1e293b;">
+                </div>
+            
+            <p style="color: #94a3b8; margin-top: 20px; font-size: 14px; font-style: italic;">
+                * Quý khách hãy cuộn xem mẫu trực tiếp ở khung trên. Nhớ ghi lại mã số mẫu hoặc copy link ảnh ưng ý để điền vào form báo giá bên dưới nhé!
+            </p>
+        </section>
+
+        <section class="order-section">
+            <div class="product-info" style="width: 100%; max-width: 100%;">
+                <div class="order-form">
+                    <h3 style="margin-top:0; font-size: 20px;">Gửi Yêu Cầu Tư Vấn & Báo Giá</h3>
+                    
+                    <div class="form-row">
+                        <label style="color: var(--accent-glow); font-size: 14px;">Mã mẫu hoặc Link ảnh bạn chọn (*)</label>
+                        <p style="font-size: 12px; color: #94a3b8; margin-top: -5px; margin-bottom: 8px;">Mẹo: Bạn có thể gõ tên file ảnh (VD: IMG_0123) hoặc bấm đúp vào ảnh trên khung Drive > Chọn biểu tượng "Mở trong cửa sổ mới" > Copy đường link dán vào đây.</p>
+                        <input type="text" id="orderTier" placeholder="Dán link ảnh hoặc nhập mã số mẫu vào đây..." style="border-color: var(--accent);">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Số lượng dự kiến</label>
+                        <input type="number" id="orderQty" placeholder="Ví dụ: 300">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Tình trạng chuẩn bị Nội Dung / File</label>
+                        <select id="orderDesign">
+                            <option value="Chưa có nội dung, cần tư vấn">Tôi chưa có nội dung, cần xưởng hỗ trợ tư vấn</option>
+                            <option value="Đã có nội dung, cần ráp vào mẫu">Tôi đã soạn nội dung, cần ráp vào mẫu thiết kế</option>
+                            <option value="Đã có file thiết kế sẵn">Tôi đã có file thiết kế AI/Corel/PDF hoàn chỉnh</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Ghi chú yêu cầu thêm</label>
+                        <textarea id="orderNote" rows="3" placeholder="Ghi chú thêm về chất liệu giấy, kích thước mong muốn..."></textarea>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-order" onclick="openOrderModal()">GỬI YÊU CẦU CHO XƯỞNG</button>
+                        <a href="https://zalo.me/0337663113" target="_blank" class="btn-contact" style="text-decoration:none; text-align:center; display:block;">Chat Zalo Tư Vấn Nhanh: 0337.663.113</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="orderModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div class="modal-content" style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--primary); padding: 35px; border-radius: 16px; width: 90%; max-width: 450px; position: relative;">
+            <span class="close-modal" onclick="closeOrderModal()" style="position: absolute; top: 15px; right: 20px; font-size: 28px; color: #94a3b8; cursor: pointer;">&times;</span>
+            <h3 style="color: #fff; margin-top: 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">Thông tin nhận báo giá</h3>
+            
+            <div class="form-row" style="margin-bottom: 15px; text-align: left;">
+                <label style="color: #cbd5e1; font-size: 13px; font-weight: 600;">Tên của bạn / Tên Doanh Nghiệp (*)</label>
+                <input type="text" id="cusName" placeholder="Họ và tên..." required style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 12px 15px; border-radius: 8px; margin-top: 5px;">
+            </div>
+            <div class="form-row" style="margin-bottom: 20px; text-align: left;">
+                <label style="color: #cbd5e1; font-size: 13px; font-weight: 600;">Số điện thoại / Zalo (*)</label>
+                <input type="tel" id="cusPhone" placeholder="Nhập số điện thoại Zalo..." required style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 12px 15px; border-radius: 8px; margin-top: 5px;">
+            </div>
+            
+            <button class="btn-order" style="width: 100%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-glow) 100%); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: 800; cursor: pointer;" id="btnSubmitFinalOrder" onclick="processFinalOrder()">XÁC NHẬN GỬI</button>
+        </div>
+    </div>
+
+    <footer id="dynamic-footer"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/components.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/kho-mau.js"></script>
+</body>
+</html>

@@ -10,6 +10,7 @@ function renderAdminSidebar() {
         { url: 'admin-donhang.html', text: 'Quản Lý Đơn Hàng' },
         { url: 'admin-baiviet.html', text: 'Bài Viết (Blog)' },
         { url: 'admin-gioithieu.html', text: 'Sửa Giới Thiệu' },
+        { url: 'admin-khomau.html', text: 'Cập nhật kho mẫu' },
         { url: 'admin-cauhinh.html', text: 'Cấu Hình Menu' },
         { url: 'admin-lienhe.html', text: 'Thông Tin Liên Hệ' }
     ];

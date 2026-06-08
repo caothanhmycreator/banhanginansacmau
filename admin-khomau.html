@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Kho Mẫu - CMS Sắc Màu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <div id="login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <div style="background: rgba(255,255,255,0.02); padding: 40px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
+            <h2 style="color: #fff; margin-top: 0; font-size: 28px; font-weight: 900;">SẮC MÀU <span style="color: #E65100;">CMS</span></h2>
+            <p style="color: #94a3b8; margin-bottom: 30px; font-size: 14px;">Vui lòng nhập mật khẩu quản trị</p>
+            <input type="password" id="adminPassword" placeholder="Nhập mật khẩu..." style="width: 100%; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: #fff; margin-bottom: 20px; box-sizing: border-box; font-family: inherit;">
+            <button onclick="checkAdminLogin()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #E65100 0%, #ff8a65 100%); color: #fff; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">ĐĂNG NHẬP</button>
+        </div>
+    </div>
+
+     <div id="admin-sidebar-container"></div>
+
+    <main>
+        <div class="panel active">
+            <h3>Đăng Bộ Sưu Tập / Kho Mẫu Mới</h3>
+            <form id="galleryForm">
+                <input type="hidden" id="galleryId" value="">
+
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Tên Bộ Sưu Tập (VD: Mẫu Thiệp Cưới 2025)</label>
+                        <input type="text" id="galTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mã ID Link (VD: thiep-cuoi-2025)</label>
+                        <input type="text" id="galSlug" placeholder="Viết liền không dấu" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Link thư mục Google Drive (Cấp quyền công khai)</label>
+                        <input type="text" id="galDrive" placeholder="Dán toàn bộ link thư mục Drive vào đây..." required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Đoạn giới thiệu ngắn</label>
+                        <textarea id="galDesc" rows="3" placeholder="Giới thiệu về kho mẫu này để hiển thị trên web..." required></textarea>
+                    </div>
+                </div>
+                <button type="button" class="btn-submit" id="submitBtn" onclick="processSubmitGallery()">LƯU VÀ PHÁT HÀNH KHO MẪU</button>
+            </form>
+
+            <div style="margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 40px;">
+                <h3 style="font-size: 22px; margin: 0 0 20px; font-weight: 800;">Danh Sách Kho Mẫu Hiện Có</h3>
+                <div style="overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border-color);">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #94a3b8;">
+                                <th style="padding: 15px 20px;">Tên Bộ Sưu Tập</th>
+                                <th style="padding: 15px 20px;">Mã Link</th>
+                                <th style="padding: 15px 20px;">Trạng thái Drive</th>
+                                <th style="padding: 15px 20px; text-align: right;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-gallery-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/api.js"></script>
+    <script src="js/admin-auth.js"></script>
+    <script src="js/admin-khomau.js"></script>
+     <script src="js/admin-sidebar.js"></script>
+</body>
+</html>

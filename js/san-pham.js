@@ -4,7 +4,7 @@
 
 // Danh mục lưới cứng giống hệt cái sếp đã quy hoạch
 const STATIC_GRID_CATEGORIES = [
-    { id: 'thiep', name: 'THIỆP SỰ KIỆN' },
+    { id: 'thiep-cưới', name: 'THIỆP CƯỚI' },
     { id: 'name-card', name: 'DANH THIẾP (NAME CARD)' },
     { id: 'bia-folder', name: 'BÌA FOLDER KẸP FILE' },
     { id: 'to-roi', name: 'TỜ RƠI QUẢNG CÁO' },

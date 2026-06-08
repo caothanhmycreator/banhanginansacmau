@@ -1,17 +1,18 @@
 // ==========================================
-// BỘ NÃO ĐIỀU KHIỂN CẤU HÌNH MENU ĐỘNG
+// BỘ NÃO ĐIỀU KHIỂN CẤU HÌNH MENU ĐỘNG (CÓ SẮP XẾP)
 // ==========================================
 
 let menuData = [];
 let globalProdCats = [];
 let globalBlogCats = [];
+let globalGalleries = []; // Khởi tạo biến lưu Kho Mẫu
 
 // Khởi chạy khi qua cửa bảo vệ
 function initPageData() {
     loadMenuData();
 }
 
-// 1. Kéo dữ liệu từ database (Gồm Menu + Danh mục Sản phẩm + Chuyên mục Blog để làm list chọn nhanh)
+// 1. Kéo dữ liệu từ database (Gồm Menu + Danh mục Sản phẩm + Chuyên mục Blog + Kho Mẫu để làm list chọn nhanh)
 async function loadMenuData() {
     // Tải danh mục sản phẩm đang có
     const pData = await API.getSettings('product_categories');
@@ -20,6 +21,10 @@ async function loadMenuData() {
     // Tải chuyên mục bài viết đang có
     const bData = await API.getSettings('blog_categories');
     if (bData) globalBlogCats = JSON.parse(bData);
+
+    // Tải danh sách Kho Mẫu (Google Drive) đang có
+    const gData = await API.getSettings('template_galleries');
+    if (gData) globalGalleries = JSON.parse(gData);
 
     // Tải cấu trúc Menu
     const data = await API.getSettings('site_menu');
@@ -31,7 +36,7 @@ async function loadMenuData() {
     renderMenuTree();
 }
 
-// 2. Vẽ HTML cây thư mục (Dùng đệ quy)
+// 2. Vẽ HTML cây thư mục (Dùng đệ quy - Bổ sung nút Lên/Xuống)
 function renderMenuTree() {
     const container = document.getElementById('menu-tree-editor');
     if (!container) return;
@@ -46,7 +51,11 @@ function renderMenuTree() {
 
 function generateTreeHTML(items, level) {
     let html = `<ul class="menu-editor-list ${level === 1 ? 'root-list' : ''}">`;
-    items.forEach(item => {
+    items.forEach((item, index) => {
+        // Kiểm tra xem item có phải đang ở vị trí đầu hay cuối mảng không để ẩn hiện nút mũi tên hợp lý
+        const isFirst = index === 0;
+        const isLast = index === items.length - 1;
+
         html += `
         <li class="menu-editor-item">
             <div class="menu-row">
@@ -55,6 +64,8 @@ function generateTreeHTML(items, level) {
                     <small>(${item.url || '#'})</small>
                 </div>
                 <div class="menu-actions">
+                    ${!isFirst ? `<button onclick="moveNodeUp('${item.id}')" title="Di chuyển lên trên">▲</button>` : ''}
+                    ${!isLast ? `<button onclick="moveNodeDown('${item.id}')" title="Di chuyển xuống dưới">▼</button>` : ''}
                     ${level < 3 ? `<button onclick="addNode('${item.id}')">+ Thêm menu con</button>` : ''}
                     <button onclick="editNode('${item.id}')">Sửa</button>
                     <button class="btn-del" onclick="deleteNode('${item.id}')">Xóa</button>
@@ -80,6 +91,34 @@ function findNodeAndParent(nodes, id) {
 }
 
 // ==========================================
+// CÁC HÀM XỬ LÝ SẮP XẾP VỊ TRÍ (MỚI)
+// ==========================================
+
+// Đẩy menu lên trên
+function moveNodeUp(id) {
+    const found = findNodeAndParent(menuData, id);
+    if (found && found.index > 0) {
+        // Hoán đổi vị trí của phần tử hiện tại với phần tử phía trên nó
+        const temp = found.parentArray[found.index];
+        found.parentArray[found.index] = found.parentArray[found.index - 1];
+        found.parentArray[found.index - 1] = temp;
+        renderMenuTree(); // Vẽ lại giao diện ngay lập tức
+    }
+}
+
+// Kéo menu xuống dưới
+function moveNodeDown(id) {
+    const found = findNodeAndParent(menuData, id);
+    if (found && found.index < found.parentArray.length - 1) {
+        // Hoán đổi vị trí của phần tử hiện tại với phần tử phía dưới nó
+        const temp = found.parentArray[found.index];
+        found.parentArray[found.index] = found.parentArray[found.index + 1];
+        found.parentArray[found.index + 1] = temp;
+        renderMenuTree(); // Vẽ lại giao diện ngay lập tức
+    }
+}
+
+// ==========================================
 // HÀM TẠO GIAO DIỆN POPUP CHỌN LINK THÔNG MINH
 // ==========================================
 function getMenuFormHTML(defaultLabel = '', defaultUrl = '') {
@@ -87,6 +126,8 @@ function getMenuFormHTML(defaultLabel = '', defaultUrl = '') {
     let prodCatOptions = globalProdCats.map(c => `<option value="san-pham.html?sub=${c.id}">Sản phẩm: ${c.name}</option>`).join('');
     // Render thẻ option cho Bài viết
     let blogCatOptions = globalBlogCats.map(c => `<option value="bai-viet.html?cat=${c.id}">Bài viết: ${c.name}</option>`).join('');
+    // Render thẻ option cho Kho Mẫu (Tự động gán link kho-mau.html?id=...)
+    let galleryOptions = globalGalleries.map(g => `<option value="kho-mau.html?id=${g.slug}">Kho mẫu: ${g.title}</option>`).join('');
     
     return `
         <div style="text-align:left; margin-bottom: 5px; font-size:13px; color:#94a3b8; font-weight:bold; text-transform: uppercase;">Tên hiển thị trên Menu:</div>
@@ -101,6 +142,9 @@ function getMenuFormHTML(defaultLabel = '', defaultUrl = '') {
                 <option value="bai-viet.html">Tất cả Bài viết</option>
                 <option value="gioi-thieu.html">Giới thiệu</option>
                 <option value="lien-he.html">Liên hệ</option>
+            </optgroup>
+            <optgroup label="KHO MẪU (GOOGLE DRIVE)" style="background:#0f172a; color: #f472b6;">
+                ${galleryOptions}
             </optgroup>
             <optgroup label="DANH MỤC SẢN PHẨM" style="background:#0f172a; color: #4ade80;">
                 ${prodCatOptions}
