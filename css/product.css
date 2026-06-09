@@ -3,8 +3,20 @@
 .product-container { max-width: 1200px; margin: 120px auto 20px; padding: 0 20px; display: flex; gap: 50px; }
 .product-gallery { flex: 1; min-width: 0; } /* min-width: 0 giúp ảnh không bao giờ tràn khung */
 
-/* Hiển thị ảnh chính */
-.main-image { width: 100%; height: 450px; border-radius: 16px; background-size: cover; background-position: center; border: 1px solid var(--glossy-border-top); box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: background-image 0.3s ease-in-out; }
+/* Hiển thị ảnh chính (Đã sửa cover thành contain, đổi trỏ chuột thành zoom) */
+.main-image { 
+    width: 100%; 
+    height: 450px; 
+    border-radius: 16px; 
+    background-size: contain; 
+    background-repeat: no-repeat;
+    background-position: center; 
+    background-color: rgba(0,0,0,0.3); /* Phông nền tối để làm nổi bật ảnh */
+    border: 1px solid var(--glossy-border-top); 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+    transition: background-image 0.3s ease-in-out; 
+    cursor: zoom-in; 
+}
 
 /* Thanh trượt nhiều ảnh (Gallery) */
 .gallery-thumbnails { display: flex; gap: 12px; margin-top: 15px; overflow-x: auto; padding-bottom: 8px; }
@@ -15,24 +27,24 @@
 .gallery-thumbnails::-webkit-scrollbar { height: 6px; }
 .gallery-thumbnails::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
-/* Cấu trúc Tên và Giá mới (Đã dời sang cột trái) */
+/* Cấu trúc Tên và Giá mới */
 .title-price-wrapper { margin-top: 30px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed rgba(255,255,255,0.1); }
 .title-price-wrapper h1 { font-size: 32px; color: #fff; margin: 0 0 10px; line-height: 1.3; }
 .title-price-wrapper .product-price { font-size: 32px; color: var(--accent-glow); font-weight: 900; }
 
-/* Thẻ mô tả nổi bật (Cột trái) */
+/* Thẻ mô tả nổi bật */
 .desc-highlight-box { background: rgba(230, 81, 0, 0.05); padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--accent); border-left: 4px solid var(--accent); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
 .desc-highlight-box h3 { margin: 0 0 10px; color: var(--accent-glow); font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
 .desc-highlight-box .desc-content { color: #cbd5e1; font-size: 15px; line-height: 1.8; text-align: justify; }
 
-/* Bảng Thông số kỹ thuật (Cột trái) */
+/* Bảng Thông số kỹ thuật */
 .specs-box { background: rgba(255,255,255,0.03); padding: 20px 25px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid var(--primary); }
 .specs-box h3 { margin: 0 0 15px; color: var(--accent-glow); font-size: 14px; text-transform: uppercase; letter-spacing: 1px;}
 .specs-list { list-style: none; padding: 0; margin: 0; color: var(--text-main); font-size: 14px; line-height: 1.8; }
 .specs-list li { border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 8px; display: flex; }
 .specs-list li strong { color: #94a3b8; width: 140px; flex-shrink: 0; }
 
-/* Khu vực thông tin & Form đặt hàng (Đã bóp nhỏ 380px để không tràn) */
+/* Khu vực thông tin & Form đặt hàng */
 .product-info { flex: 0 0 380px; max-width: 100%; display: flex; flex-direction: column; }
 
 /* Form nhập liệu và chọn cấu hình cho khách */
@@ -58,8 +70,39 @@
 /* Bài viết dài */
 .product-article { max-width: 1200px; margin: 0 auto 80px; padding: 50px; background: var(--glossy-bg); border-radius: 16px; border: 1px solid var(--glossy-border-top); }
 .product-article h2 { color: var(--accent-glow); margin-top: 0; font-size: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 30px;}
-.product-article .content { color: var(--text-muted); line-height: 1.8; font-size: 15px; text-align: justify; }
 
+/* Tùy chỉnh chuyên sâu cho nội dung xuất ra từ Trình soạn thảo (TinyMCE) */
+.product-article .content { color: #cbd5e1; line-height: 1.8; font-size: 16px; text-align: justify; }
+.product-article .content p { margin-bottom: 15px; }
+
+/* Làm đẹp thẻ In Đậm */
+.product-article .content strong, 
+.product-article .content b { color: #fff; font-weight: 700; }
+
+/* Làm đẹp thẻ Link (Màu cam, gạch chân đứt nét) */
+.product-article .content a { 
+    color: var(--accent-glow); 
+    text-decoration: none; 
+    font-weight: 600; 
+    border-bottom: 1px dashed var(--accent-glow); 
+    transition: 0.2s; 
+}
+.product-article .content a:hover { color: #fff; border-bottom-color: #fff; }
+
+/* Làm đẹp Danh sách (Bullet points) */
+.product-article .content ul, 
+.product-article .content ol { margin-bottom: 20px; padding-left: 20px; }
+.product-article .content li { margin-bottom: 10px; }
+
+/* Làm đẹp Hình ảnh chèn vào bài (Tự co giãn không bị tràn) */
+.product-article .content img { 
+    max-width: 100%; 
+    height: auto; 
+    border-radius: 12px; 
+    margin: 20px auto; 
+    display: block; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4); 
+}
 
 button, input, select, textarea, .btn-order, .btn-contact { 
     font-family: 'Montserrat', sans-serif !important; 
@@ -79,3 +122,9 @@ button, input, select, textarea, .btn-order, .btn-contact {
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; color: #94a3b8; cursor: pointer; transition: 0.2s; }
 .close-modal:hover { color: var(--accent-glow); }
 .modal-content h3 { margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; font-size: 20px;}
+
+/* --- MỚI: CSS CHO LIGHTBOX XEM ẢNH LỚN --- */
+.lightbox-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+.lightbox-overlay img { max-width: 90%; max-height: 90vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); object-fit: contain; }
+.lightbox-close { position: absolute; top: 20px; right: 30px; font-size: 45px; color: #94a3b8; cursor: pointer; transition: 0.2s; font-weight: 300; }
+.lightbox-close:hover { color: var(--accent-glow); transform: scale(1.1); }

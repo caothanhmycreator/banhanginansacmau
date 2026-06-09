@@ -31,7 +31,10 @@ function renderGalleryTable() {
     }
 
     let rowsHTML = '';
-    allGalleries.forEach(gal => {
+    allGalleries.forEach((gal, index) => {
+        const isFirst = index === 0;
+        const isLast = index === allGalleries.length - 1;
+
         rowsHTML += `
             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 15px 20px;">
@@ -42,6 +45,8 @@ function renderGalleryTable() {
                     ✅ Đã kết nối Iframe
                 </td>
                 <td style="padding: 15px 20px; text-align: right; white-space: nowrap;">
+                    ${!isFirst ? `<button type="button" onclick="moveGalleryUp('${gal.id}')" style="background:#334155; color:#fff; border:1px solid rgba(255,255,255,0.1); padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; margin-right:5px;" title="Lên trên">▲</button>` : ''}
+                    ${!isLast ? `<button type="button" onclick="moveGalleryDown('${gal.id}')" style="background:#334155; color:#fff; border:1px solid rgba(255,255,255,0.1); padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; margin-right:5px;" title="Xuống dưới">▼</button>` : ''}
                     <button type="button" onclick="prepareEditGallery('${gal.id}')" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.1); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; margin-right:5px;">Sửa</button>
                     <button type="button" onclick="deleteGallery('${gal.id}')" style="background:#7f1d1d; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px;">Xóa</button>
                 </td>
@@ -51,11 +56,50 @@ function renderGalleryTable() {
     tbody.innerHTML = rowsHTML;
 }
 
+// ==========================================
+// CÁC HÀM SẮP XẾP VỊ TRÍ KHO MẪU (MỚI)
+// ==========================================
+
+async function moveGalleryUp(id) {
+    const index = allGalleries.findIndex(g => g.id === id);
+    if (index > 0) {
+        // Hoán đổi vị trí
+        const temp = allGalleries[index];
+        allGalleries[index] = allGalleries[index - 1];
+        allGalleries[index - 1] = temp;
+        await saveGalleryOrder();
+    }
+}
+
+async function moveGalleryDown(id) {
+    const index = allGalleries.findIndex(g => g.id === id);
+    if (index !== -1 && index < allGalleries.length - 1) {
+        // Hoán đổi vị trí
+        const temp = allGalleries[index];
+        allGalleries[index] = allGalleries[index + 1];
+        allGalleries[index + 1] = temp;
+        await saveGalleryOrder();
+    }
+}
+
+async function saveGalleryOrder() {
+    const success = await API.updateSettings('template_galleries', JSON.stringify(allGalleries));
+    if (success) {
+        renderGalleryTable(); // Cập nhật lại giao diện ngay lập tức
+    } else {
+        showAlert("Lỗi!", "Không thể lưu thứ tự!", "error");
+    }
+}
+
 // Thuật toán tách mã ID từ Link Google Drive dài thòng lòng
 function extractDriveId(url) {
     const match = url.match(/[-\w]{25,}/);
     return match ? match[0] : url; // Nếu không bóc được thì giữ nguyên (đề phòng sếp nhập đúng ID rồi)
 }
+
+// ==========================================
+// XỬ LÝ DATABASE (THÊM, SỬA, XÓA)
+// ==========================================
 
 async function processSubmitGallery() {
     const btn = document.getElementById('submitBtn');
@@ -109,6 +153,10 @@ async function processSubmitGallery() {
         document.getElementById('galleryForm').reset();
         idObj.value = "";
         btn.innerText = "LƯU VÀ PHÁT HÀNH KHO MẪU";
+        
+        // MỚI: Mở khóa lại nút Lưu để sếp có thể thao tác tiếp ngay lập tức
+        btn.disabled = false; 
+        
         loadGalleries();
     } else {
         showAlert("Lỗi!", "Có lỗi kết nối hệ thống!", "error");

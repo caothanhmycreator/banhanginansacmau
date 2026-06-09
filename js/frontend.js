@@ -205,3 +205,20 @@ async function processFinalOrder() {
         btn.disabled = false;
     }
 }
+
+// 4. MỚI: CÁC HÀM XỬ LÝ LIGHTBOX XEM ẢNH PHÓNG TO
+function openLightbox() {
+    const mainImg = document.getElementById('sp-image');
+    const bgImg = mainImg.style.backgroundImage;
+    
+    // Nếu có ảnh thì bóc tách lấy url thật
+    if (bgImg && bgImg !== 'none') {
+        const url = bgImg.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        document.getElementById('lightbox-img').src = url;
+        document.getElementById('imageLightbox').style.display = 'flex';
+    }
+}
+
+function closeLightbox() {
+    document.getElementById('imageLightbox').style.display = 'none';
+}

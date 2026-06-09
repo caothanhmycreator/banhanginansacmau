@@ -1,6 +1,5 @@
 // ==========================================
 // BỘ NÃO ĐIỀU PHỐI TRANG KHO MẪU (GOOGLE DRIVE)
-// Dùng chung cho tất cả kho mẫu (kho-mau.html?id=...)
 // ==========================================
 
 let currentGallery = null; // Biến lưu kho mẫu đang xem
@@ -8,24 +7,53 @@ let currentGallery = null; // Biến lưu kho mẫu đang xem
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Đọc mã ID (slug) từ URL
     const urlParams = new URLSearchParams(window.location.search);
-    const slug = urlParams.get('id'); // Lấy chữ 'thiep-cuoi-2025' từ link
+    const slug = urlParams.get('id');
 
     const loadingObj = document.getElementById('loading');
     const mainContent = document.getElementById('main-content');
-
-    if (!slug) {
-        loadingObj.innerHTML = "Không tìm thấy mã bộ sưu tập. Vui lòng kiểm tra lại đường dẫn link!";
-        return;
-    }
+    const allGalleriesWrapper = document.getElementById('all-galleries-wrapper');
 
     try {
-        // 2. Kéo toàn bộ danh sách kho mẫu từ Database (bảng app_settings)
+        // 2. Kéo toàn bộ danh sách kho mẫu từ Database
         const data = await API.getSettings('template_galleries');
+        let galleries = [];
         if (data) {
-            const galleries = JSON.parse(data);
-            // Tìm kho mẫu có mã slug khớp với URL
-            currentGallery = galleries.find(g => g.slug === slug);
+            galleries = JSON.parse(data);
         }
+
+        // TÌNH HUỐNG 1: KHÔNG CÓ ID -> HIỂN THỊ DANH SÁCH TẤT CẢ KHO MẪU
+        if (!slug) {
+            loadingObj.style.display = 'none';
+            
+            if (galleries.length === 0) {
+                loadingObj.innerHTML = "Hiện tại xưởng chưa có kho mẫu nào.";
+                loadingObj.style.display = 'block';
+                return;
+            }
+
+            document.title = "Khám Phá Kho Mẫu - In Ấn Sắc Màu";
+            const grid = document.getElementById('galleries-grid');
+            let gridHTML = '';
+            
+            // Vẽ danh sách thẻ với Icon Bộ Sưu Tập
+            galleries.forEach(g => {
+                const galleryIcon = `<svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="transition: 0.4s;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
+
+                gridHTML += `
+                    <a href="kho-mau.html?id=${g.slug}" class="gallery-card">
+                        <div class="gallery-icon">${galleryIcon}</div>
+                        <h3>${g.title}</h3>
+                        <p>${g.desc || 'Xem trọn bộ sưu tập đầy đủ...'}</p>
+                    </a>
+                `;
+            });
+            grid.innerHTML = gridHTML;
+            if(allGalleriesWrapper) allGalleriesWrapper.style.display = 'block';
+            return;
+        }
+
+        // TÌNH HUỐNG 2: CÓ ID -> HIỂN THỊ CHI TIẾT 1 KHO MẪU
+        currentGallery = galleries.find(g => g.slug === slug);
 
         // Nếu khách gõ sai link hoặc kho mẫu bị xóa
         if (!currentGallery) {
@@ -36,7 +64,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 3. Bơm dữ liệu ra giao diện web
         document.title = `Bộ Sưu Tập: ${currentGallery.title} - In Ấn Sắc Màu`;
         
-        // In hoa và bôi màu cam phần tên kho mẫu
         const titleElement = document.getElementById('gal-title');
         titleElement.innerHTML = `BỘ SƯU TẬP <span>${currentGallery.title.toUpperCase()}</span>`;
         
@@ -117,7 +144,6 @@ async function processFinalOrder() {
         package_selected: `Mẫu khách gửi: ${tier || 'Chưa chốt mẫu, cần tư vấn'}`,
         custom_quantity: qty || 'Chưa rõ',
         design_status: design,
-        // Gắn kèm luôn cái link kho mẫu vào phần ghi chú để Sếp dễ bấm xem lại
         customer_note: `(Link bộ sưu tập: ${currentGalleryUrl}) - Ghi chú thêm: ${note}`,
         customer_name: cusName,
         customer_phone: cusPhone

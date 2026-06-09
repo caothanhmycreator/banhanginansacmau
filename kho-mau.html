@@ -10,11 +10,111 @@
     <link rel="stylesheet" href="css/product.css">
     
     <style>
+        /* Tổng thể */
         .wedding-hero { text-align: center; padding: 140px 20px 40px; }
         .wedding-hero h1 { font-size: 38px; color: #fff; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; }
         .wedding-hero h1 span { color: var(--accent-glow); }
-        .drive-container { margin: 0 auto 60px; max-width: 1000px; text-align: center; background: var(--glossy-bg); padding: 40px 30px; border-radius: 16px; border-top: 1px solid var(--glossy-border-top); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .order-section { max-width: 800px; margin: 0 auto 80px; }
+
+        /* KHUNG CHỨA IFRAME (TRANG CHI TIẾT) - Chống tràn sát lề */
+        .drive-container { 
+            width: calc(100% - 30px); /* Luôn chừa 30px khoảng hở mỗi bên mép màn hình */
+            max-width: 1800px; /* Mở rộng tối đa 1200px để xem hình đã mắt */
+            margin: 0 auto 30px; /* Tự động căn giữa */
+            text-align: center; 
+            background: var(--glossy-bg); 
+            padding: 40px 30px; 
+            border-radius: 16px; 
+            border-top: 1px solid var(--glossy-border-top); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            box-sizing: border-box; /* Ép padding nằm gọn trong width */
+        }
+
+        .order-section { 
+            width: calc(100% - 40px);
+            max-width: 800px; 
+            margin: 0 auto 80px; 
+            box-sizing: border-box;
+        }
+
+        /* LƯỚI KHO MẪU (TRANG TỔNG) - Căn giữa, lấp đầy, không bị kẹt */
+        .galleries-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap: 30px; 
+            max-width: 1800px; 
+            margin: 0 auto 80px; 
+            padding: 0 40px; /* Lề an toàn cho lưới */
+            box-sizing: border-box;
+        }
+
+        /* Giao diện Mobile */
+        @media (max-width: 768px) {
+            .galleries-grid { padding: 0 20px; }
+            .drive-container { width: calc(100% - 30px); padding: 20px; }
+        }
+
+        /* THẺ KHO MẪU CAO CẤP */
+        .gallery-card { 
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 20px; 
+            padding: 40px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: all 0.4s ease; 
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            text-decoration: none !important; 
+        }
+
+        /* Quét sạch mọi thuộc tính gạch chân mặc định của trình duyệt */
+        .gallery-card *, .gallery-card:hover *, .gallery-card:visited * {
+            text-decoration: none !important;
+        }
+
+        .gallery-card:hover { 
+            background: rgba(230, 81, 0, 0.08);
+            border-color: var(--accent);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .gallery-icon {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.4s;
+        }
+
+        .gallery-card:hover .gallery-icon {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .gallery-card h3 { 
+            color: #fff !important; 
+            font-size: 22px; 
+            margin: 0; 
+            font-weight: 800; 
+            transition: 0.3s; 
+        }
+        
+        .gallery-card p { 
+            color: #cbd5e1 !important; 
+            font-size: 14px; 
+            margin-top: 15px;
+            line-height: 1.6;
+            opacity: 0; 
+            height: 0; 
+            overflow: hidden; 
+            transition: all 0.4s ease;
+        }
+        
+        .gallery-card:hover p { 
+            opacity: 1; 
+            height: auto; 
+        }
     </style>
 </head>
 <body>
@@ -23,6 +123,14 @@
 
     <div id="loading" style="text-align:center; padding: 150px; color: var(--accent-glow); font-weight:bold; font-size: 18px;">
         Đang đồng bộ kho mẫu từ Google Drive...
+    </div>
+
+    <div id="all-galleries-wrapper" style="display: none; padding-top: 140px;">
+        <div style="text-align: center; margin-bottom: 40px; padding: 0 20px;">
+            <h1 style="font-size: 38px; color: #fff; font-weight: 900; margin-bottom: 15px; text-transform: uppercase;">KHÁM PHÁ <span style="color: var(--accent-glow);">KHO MẪU</span></h1>
+            <p style="color: var(--text-muted); font-size: 16px; max-width: 650px; margin: 0 auto; line-height: 1.6;">Tổng hợp các bộ sưu tập mẫu thiết kế ấn tượng nhất tại In Ấn Sắc Màu.</p>
+        </div>
+        <div class="galleries-grid" id="galleries-grid"></div>
     </div>
 
     <main class="weightless-wrapper" id="main-content" style="display: none;">

@@ -20,7 +20,7 @@
     <div id="product-wrapper" style="display: none;">
         <section class="product-container">
             <div class="product-gallery">
-                <div class="main-image" id="sp-image"></div>
+                <div class="main-image" id="sp-image" onclick="openLightbox()"></div>
                 <div class="gallery-thumbnails" id="sp-gallery-thumbs"></div>
                 
                 <div class="title-price-wrapper">
@@ -28,8 +28,6 @@
                     <div class="product-price" id="sp-price">0 đ</div>
                 </div>
 
-               
-                
                 <div class="specs-box">
                     <h3>Thông Số Cơ Bản</h3>
                     <ul class="specs-list" id="sp-specs"></ul>
@@ -99,6 +97,11 @@
             
             <button class="btn-order" style="width: 100%; margin-top: 10px;" id="btnSubmitFinalOrder" onclick="processFinalOrder()">Xác Nhận Gửi Yêu Cầu</button>
         </div>
+    </div>
+
+    <div class="lightbox-overlay" id="imageLightbox" onclick="closeLightbox()">
+        <span class="lightbox-close" title="Đóng">&times;</span>
+        <img id="lightbox-img" src="" alt="Ảnh phóng to" onclick="event.stopPropagation()">
     </div>
 
     <footer id="dynamic-footer"></footer>

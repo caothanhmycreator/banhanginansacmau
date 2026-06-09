@@ -18,7 +18,20 @@
         </div>
     </div>
 
-     <div id="admin-sidebar-container"></div>
+    <aside>
+        <h2>SẮC MÀU <span>CMS</span></h2>
+        <ul class="nav-menu">
+            <a href="quan-tri.html" style="text-decoration: none;"><li class="nav-item">Tổng Quan</li></a>
+            <a href="admin-sanpham.html" style="text-decoration: none;"><li class="nav-item active">Sản Phẩm</li></a>
+            <a href="admin-donhang.html" style="text-decoration: none;"><li class="nav-item">Quản Lý Đơn Hàng</li></a>
+            <a href="admin-baiviet.html" style="text-decoration: none;"><li class="nav-item">Bài Viết (Blog)</li></a>
+            <a href="admin-gioithieu.html" style="text-decoration: none;"><li class="nav-item">Sửa Giới Thiệu</li></a>
+            <a href="admin-lienhe.html" style="text-decoration: none;"><li class="nav-item">Thông Tin Liên Hệ</li></a>
+        </ul>
+        <div style="margin-top: auto; text-align: center;">
+            <button onclick="adminLogout()" style="background: transparent; color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: 0.2s;">Đăng Xuất</button>
+        </div>
+    </aside>
 
     <main>
         <div class="panel active">
@@ -95,10 +108,6 @@
                         <textarea id="prodContent" rows="8"></textarea>
                     </div>
                 </div>
-                    <div class="form-group full-width" style="background: rgba(230, 81, 0, 0.1); padding: 15px; border-radius: 8px; border: 1px dashed var(--accent); display: flex; flex-direction: row; align-items: center; gap: 10px;">
-                        <input type="checkbox" id="prodFeatured" style="width: 20px; height: 20px; cursor: pointer; margin: 0;">
-                        <label for="prodFeatured" style="color: #fff; margin: 0; cursor: pointer; font-size: 14px;">🌟 Đánh dấu làm "Sản Phẩm Nổi Bật" (Hiển thị lên Trang Chủ)</label>
-                    </div>
                 <button type="button" class="btn-submit" id="submitBtn" onclick="processSubmitProduct()">Lưu và phát hành sản phẩm</button>
             </form>
 
@@ -152,11 +161,9 @@
                     <div class="form-group full-width"><label>Mô tả ngắn</label><textarea id="editProdDesc" rows="2"></textarea></div>
                     <div class="form-group"><label>Thông số kỹ thuật</label><div id="edit-specs-container"></div><button type="button" class="btn-add" onclick="addEditSpecRow()">+ Thêm</button></div>
                     <div class="form-group"><label>Bảng giá</label><div id="edit-tiers-container"></div><button type="button" class="btn-add" onclick="addEditTierRow()">+ Thêm</button></div>
-                    <div class="form-group full-width"><label>Nội dung chi tiết</label><textarea id="editProdContent" rows="8"></textarea></div>
-                    
-                    <div class="form-group full-width" style="background: rgba(230, 81, 0, 0.1); padding: 15px; border-radius: 8px; border: 1px dashed var(--accent); display: flex; flex-direction: row; align-items: center; gap: 10px;">
-                        <input type="checkbox" id="editProdFeatured" style="width: 20px; height: 20px; cursor: pointer; margin: 0;">
-                        <label for="editProdFeatured" style="color: #fff; margin: 0; cursor: pointer; font-size: 14px;">🌟 Đánh dấu làm "Sản Phẩm Nổi Bật" (Hiển thị lên Trang Chủ)</label>
+                    <div class="form-group full-width">
+                        <label>Nội dung chi tiết</label>
+                        <textarea id="editProdContent" rows="8"></textarea>
                     </div>
                 </div>
                 <button type="button" class="btn-submit" id="btnUpdateProduct" onclick="processUpdateProduct()">LƯU THAY ĐỔI</button>
@@ -166,9 +173,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
+    <script>
+        // Khởi tạo giao diện soạn thảo văn bản
+        tinymce.init({
+            selector: '#prodContent, #editProdContent',
+            plugins: 'lists link image media table code help wordcount',
+            toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | code',
+            skin: 'oxide-dark',
+            content_css: 'dark',
+            height: 400,
+            menubar: false
+        });
+    </script>
+
     <script src="js/api.js"></script>
     <script src="js/admin-auth.js"></script>
     <script src="js/admin-sanpham.js"></script> 
-    <script src="js/admin-sidebar.js"></script> 
 </body>
 </html>
