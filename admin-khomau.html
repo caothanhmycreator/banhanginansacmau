@@ -40,6 +40,11 @@
                         <input type="text" id="galDrive" placeholder="Dán toàn bộ link thư mục Drive vào đây..." required>
                     </div>
                     <div class="form-group full-width">
+                        <label>Hình đại diện (Hiển thị ngoài trang chủ)</label>
+                        <input type="file" id="galImage" accept="image/*">
+                        <small style="color: #94a3b8; display: block; margin-top: 5px;">* Nếu để trống, hệ thống sẽ tự dùng Icon mặc định.</small>
+                    </div>
+                    <div class="form-group full-width">
                         <label>Đoạn giới thiệu ngắn</label>
                         <textarea id="galDesc" rows="3" placeholder="Giới thiệu về kho mẫu này để hiển thị trên web..." required></textarea>
                     </div>
@@ -53,6 +58,7 @@
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
                         <thead>
                             <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: #94a3b8;">
+                                <th style="padding: 15px 20px; width: 70px;">Ảnh</th>
                                 <th style="padding: 15px 20px;">Tên Bộ Sưu Tập</th>
                                 <th style="padding: 15px 20px;">Mã Link</th>
                                 <th style="padding: 15px 20px;">Trạng thái Drive</th>
@@ -71,6 +77,6 @@
     <script src="js/api.js"></script>
     <script src="js/admin-auth.js"></script>
     <script src="js/admin-khomau.js"></script>
-     <script src="js/admin-sidebar.js"></script>
+    <script src="js/admin-sidebar.js"></script>
 </body>
 </html>

@@ -35,18 +35,34 @@ document.addEventListener('DOMContentLoaded', async () => {
             const grid = document.getElementById('galleries-grid');
             let gridHTML = '';
             
-            // Vẽ danh sách thẻ với Icon Bộ Sưu Tập
+            // Vẽ danh sách thẻ (CÓ HÌNH ẢNH HOẶC ICON)
             galleries.forEach(g => {
-                const galleryIcon = `<svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="transition: 0.4s;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
+                let visualHtml = '';
+                
+                if (g.image_url) {
+                    // Nếu Sếp có up ảnh, hiển thị khối ảnh tràn viền phía trên
+                    visualHtml = `
+                        <div class="gallery-img-wrapper">
+                            <div class="gallery-thumb" style="background-image: url('${g.image_url}')"></div>
+                        </div>
+                    `;
+                } else {
+                    // Nếu không có ảnh, dùng lại Icon cũ
+                    const galleryIcon = `<svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="transition: 0.4s;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
+                    visualHtml = `<div class="gallery-icon" style="margin-top: 15px;">${galleryIcon}</div>`;
+                }
 
                 gridHTML += `
                     <a href="kho-mau.html?id=${g.slug}" class="gallery-card">
-                        <div class="gallery-icon">${galleryIcon}</div>
-                        <h3>${g.title}</h3>
-                        <p>${g.desc || 'Xem trọn bộ sưu tập đầy đủ...'}</p>
+                        ${visualHtml}
+                        <div class="gallery-content">
+                            <h3>${g.title}</h3>
+                            <p>${g.desc || 'Xem trọn bộ sưu tập đầy đủ...'}</p>
+                        </div>
                     </a>
                 `;
             });
+            
             grid.innerHTML = gridHTML;
             if(allGalleriesWrapper) allGalleriesWrapper.style.display = 'block';
             return;

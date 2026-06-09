@@ -4,7 +4,6 @@
 
 let allGalleries = [];
 
-// Chạy tự động sau khi qua vòng bảo mật
 function initPageData() {
     loadGalleries();
 }
@@ -26,7 +25,7 @@ async function loadGalleries() {
 function renderGalleryTable() {
     const tbody = document.getElementById('admin-gallery-list');
     if (allGalleries.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="padding:20px; text-align:center; color:#94a3b8;">Chưa có kho mẫu nào được tạo.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="padding:20px; text-align:center; color:#94a3b8;">Chưa có kho mẫu nào được tạo.</td></tr>`;
         return;
     }
 
@@ -35,8 +34,14 @@ function renderGalleryTable() {
         const isFirst = index === 0;
         const isLast = index === allGalleries.length - 1;
 
+        // Render ảnh nhỏ trong bảng admin
+        const imgHtml = gal.image_url 
+            ? `<img src="${gal.image_url}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">` 
+            : `<div style="width: 50px; height: 50px; background: rgba(255,255,255,0.05); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🖼️</div>`;
+
         rowsHTML += `
             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 15px 20px;">${imgHtml}</td>
                 <td style="padding: 15px 20px;">
                     <strong style="color:#fff; display:block; margin-bottom:5px;">${gal.title}</strong>
                 </td>
@@ -56,14 +61,10 @@ function renderGalleryTable() {
     tbody.innerHTML = rowsHTML;
 }
 
-// ==========================================
-// CÁC HÀM SẮP XẾP VỊ TRÍ KHO MẪU (MỚI)
-// ==========================================
-
+// CÁC HÀM SẮP XẾP VỊ TRÍ
 async function moveGalleryUp(id) {
     const index = allGalleries.findIndex(g => g.id === id);
     if (index > 0) {
-        // Hoán đổi vị trí
         const temp = allGalleries[index];
         allGalleries[index] = allGalleries[index - 1];
         allGalleries[index - 1] = temp;
@@ -74,7 +75,6 @@ async function moveGalleryUp(id) {
 async function moveGalleryDown(id) {
     const index = allGalleries.findIndex(g => g.id === id);
     if (index !== -1 && index < allGalleries.length - 1) {
-        // Hoán đổi vị trí
         const temp = allGalleries[index];
         allGalleries[index] = allGalleries[index + 1];
         allGalleries[index + 1] = temp;
@@ -84,23 +84,16 @@ async function moveGalleryDown(id) {
 
 async function saveGalleryOrder() {
     const success = await API.updateSettings('template_galleries', JSON.stringify(allGalleries));
-    if (success) {
-        renderGalleryTable(); // Cập nhật lại giao diện ngay lập tức
-    } else {
-        showAlert("Lỗi!", "Không thể lưu thứ tự!", "error");
-    }
+    if (success) renderGalleryTable(); 
+    else showAlert("Lỗi!", "Không thể lưu thứ tự!", "error");
 }
 
-// Thuật toán tách mã ID từ Link Google Drive dài thòng lòng
 function extractDriveId(url) {
     const match = url.match(/[-\w]{25,}/);
-    return match ? match[0] : url; // Nếu không bóc được thì giữ nguyên (đề phòng sếp nhập đúng ID rồi)
+    return match ? match[0] : url; 
 }
 
-// ==========================================
-// XỬ LÝ DATABASE (THÊM, SỬA, XÓA)
-// ==========================================
-
+// XỬ LÝ DATABASE (THÊM, SỬA, XÓA) CÓ ẢNH
 async function processSubmitGallery() {
     const btn = document.getElementById('submitBtn');
     const idObj = document.getElementById('galleryId');
@@ -110,19 +103,18 @@ async function processSubmitGallery() {
     const slug = document.getElementById('galSlug').value.trim().toLowerCase();
     const driveInput = document.getElementById('galDrive').value.trim();
     const desc = document.getElementById('galDesc').value.trim();
+    const imageFile = document.getElementById('galImage').files[0]; // Bắt file ảnh
 
     if (!title || !slug || !driveInput || !desc) {
         showAlert("Thiếu thông tin", "Sếp vui lòng điền đầy đủ các mục nhé!", "warning");
         return;
     }
 
-    // Tự động bóc tách Drive ID
     const driveId = extractDriveId(driveInput);
 
     btn.disabled = true;
     btn.innerText = "ĐANG LƯU DỮ LIỆU...";
 
-    // Tránh trùng Slug
     const isDuplicate = allGalleries.some(g => g.slug === slug && g.id !== currentId);
     if (isDuplicate) {
         showAlert("Trùng Mã Link", "Mã Slug này đã tồn tại, sếp đổi mã khác nhé!", "error");
@@ -131,17 +123,27 @@ async function processSubmitGallery() {
         return;
     }
 
+    // Xử lý upload ảnh (nếu có)
+    let imageUrl = null;
+    if (imageFile) {
+        btn.innerText = "ĐANG TẢI ẢNH LÊN...";
+        imageUrl = await API.uploadImage(imageFile, 'galleries'); // Tái sử dụng hàm upload
+    }
+
     if (currentId) {
-        // Cập nhật
         const index = allGalleries.findIndex(g => g.id === currentId);
         if (index !== -1) {
-            allGalleries[index] = { id: currentId, title, slug, driveId, desc };
+            const oldGallery = allGalleries[index];
+            allGalleries[index] = { 
+                id: currentId, title, slug, driveId, desc, 
+                image_url: imageUrl || oldGallery.image_url // Giữ ảnh cũ nếu không up ảnh mới
+            };
         }
     } else {
-        // Tạo mới
         const newGallery = {
             id: Date.now().toString(),
-            title, slug, driveId, desc
+            title, slug, driveId, desc,
+            image_url: imageUrl
         };
         allGalleries.push(newGallery);
     }
@@ -152,11 +154,9 @@ async function processSubmitGallery() {
         Swal.fire({ title: "Thành công!", text: "Kho mẫu đã được cập nhật!", icon: "success", background: '#1e293b', color: '#fff', confirmButtonColor: '#E65100' });
         document.getElementById('galleryForm').reset();
         idObj.value = "";
+        document.getElementById('galImage').value = ""; // Xóa bộ nhớ file
         btn.innerText = "LƯU VÀ PHÁT HÀNH KHO MẪU";
-        
-        // MỚI: Mở khóa lại nút Lưu để sếp có thể thao tác tiếp ngay lập tức
         btn.disabled = false; 
-        
         loadGalleries();
     } else {
         showAlert("Lỗi!", "Có lỗi kết nối hệ thống!", "error");
@@ -171,8 +171,9 @@ function prepareEditGallery(id) {
     document.getElementById('galleryId').value = gal.id;
     document.getElementById('galTitle').value = gal.title;
     document.getElementById('galSlug').value = gal.slug;
-    document.getElementById('galDrive').value = gal.driveId; // Trả lại ID cho sếp sửa
+    document.getElementById('galDrive').value = gal.driveId; 
     document.getElementById('galDesc').value = gal.desc;
+    document.getElementById('galImage').value = ""; // Reset file
 
     document.getElementById('submitBtn').innerText = "CẬP NHẬT KHO MẪU";
     window.scrollTo({ top: 0, behavior: 'smooth' });
