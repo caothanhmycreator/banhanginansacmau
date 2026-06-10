@@ -5,28 +5,22 @@
 let menuData = [];
 let globalProdCats = [];
 let globalBlogCats = [];
-let globalGalleries = []; // Khởi tạo biến lưu Kho Mẫu
+let globalGalleries = []; 
 
-// Khởi chạy khi qua cửa bảo vệ
 function initPageData() {
     loadMenuData();
 }
 
-// 1. Kéo dữ liệu từ database (Gồm Menu + Danh mục Sản phẩm + Chuyên mục Blog + Kho Mẫu để làm list chọn nhanh)
 async function loadMenuData() {
-    // Tải danh mục sản phẩm đang có
     const pData = await API.getSettings('product_categories');
     if (pData) globalProdCats = JSON.parse(pData);
 
-    // Tải chuyên mục bài viết đang có
     const bData = await API.getSettings('blog_categories');
     if (bData) globalBlogCats = JSON.parse(bData);
 
-    // Tải danh sách Kho Mẫu (Google Drive) đang có
     const gData = await API.getSettings('template_galleries');
     if (gData) globalGalleries = JSON.parse(gData);
 
-    // Tải cấu trúc Menu
     const data = await API.getSettings('site_menu');
     if (data) {
         menuData = JSON.parse(data);
@@ -36,7 +30,6 @@ async function loadMenuData() {
     renderMenuTree();
 }
 
-// 2. Vẽ HTML cây thư mục (Dùng đệ quy - Bổ sung nút Lên/Xuống)
 function renderMenuTree() {
     const container = document.getElementById('menu-tree-editor');
     if (!container) return;
@@ -52,7 +45,6 @@ function renderMenuTree() {
 function generateTreeHTML(items, level) {
     let html = `<ul class="menu-editor-list ${level === 1 ? 'root-list' : ''}">`;
     items.forEach((item, index) => {
-        // Kiểm tra xem item có phải đang ở vị trí đầu hay cuối mảng không để ẩn hiện nút mũi tên hợp lý
         const isFirst = index === 0;
         const isLast = index === items.length - 1;
 
@@ -78,7 +70,6 @@ function generateTreeHTML(items, level) {
     return html;
 }
 
-// 3. Hàm dò tìm đối tượng trong mảng lồng nhau
 function findNodeAndParent(nodes, id) {
     for (let i = 0; i < nodes.length; i++) {
         if (nodes[i].id === id) return { node: nodes[i], parentArray: nodes, index: i };
@@ -90,44 +81,31 @@ function findNodeAndParent(nodes, id) {
     return null;
 }
 
-// ==========================================
-// CÁC HÀM XỬ LÝ SẮP XẾP VỊ TRÍ (MỚI)
-// ==========================================
-
-// Đẩy menu lên trên
 function moveNodeUp(id) {
     const found = findNodeAndParent(menuData, id);
     if (found && found.index > 0) {
-        // Hoán đổi vị trí của phần tử hiện tại với phần tử phía trên nó
         const temp = found.parentArray[found.index];
         found.parentArray[found.index] = found.parentArray[found.index - 1];
         found.parentArray[found.index - 1] = temp;
-        renderMenuTree(); // Vẽ lại giao diện ngay lập tức
+        renderMenuTree(); 
     }
 }
 
-// Kéo menu xuống dưới
 function moveNodeDown(id) {
     const found = findNodeAndParent(menuData, id);
     if (found && found.index < found.parentArray.length - 1) {
-        // Hoán đổi vị trí của phần tử hiện tại với phần tử phía dưới nó
         const temp = found.parentArray[found.index];
         found.parentArray[found.index] = found.parentArray[found.index + 1];
         found.parentArray[found.index + 1] = temp;
-        renderMenuTree(); // Vẽ lại giao diện ngay lập tức
+        renderMenuTree(); 
     }
 }
 
-// ==========================================
-// HÀM TẠO GIAO DIỆN POPUP CHỌN LINK THÔNG MINH
-// ==========================================
+// MỚI: BỔ SUNG NHÓM OPTION ĐỒNG BỘ CẤP 2, CẤP 3 CHO KHO MẪU
 function getMenuFormHTML(defaultLabel = '', defaultUrl = '') {
-    // Render thẻ option cho Sản phẩm
     let prodCatOptions = globalProdCats.map(c => `<option value="san-pham.html?sub=${c.id}">Sản phẩm: ${c.name}</option>`).join('');
-    // Render thẻ option cho Bài viết
     let blogCatOptions = globalBlogCats.map(c => `<option value="bai-viet.html?cat=${c.id}">Bài viết: ${c.name}</option>`).join('');
-    // Render thẻ option cho Kho Mẫu (Tự động gán link kho-mau.html?id=...)
-    let galleryOptions = globalGalleries.map(g => `<option value="kho-mau.html?id=${g.slug}">Kho mẫu: ${g.title}</option>`).join('');
+    let galleryDetailOptions = globalGalleries.map(g => `<option value="kho-mau.html?id=${g.slug}">Chi tiết: ${g.title}</option>`).join('');
     
     return `
         <div style="text-align:left; margin-bottom: 5px; font-size:13px; color:#94a3b8; font-weight:bold; text-transform: uppercase;">Tên hiển thị trên Menu:</div>
@@ -138,14 +116,26 @@ function getMenuFormHTML(defaultLabel = '', defaultUrl = '') {
             <option value="custom">-- Chọn trang web / Chọn danh mục --</option>
             <optgroup label="TRANG TĨNH CƠ BẢN" style="background:#0f172a; color: #38bdf8;">
                 <option value="index.html">Trang Chủ</option>
+                <option value="kho-mau.html">Tất cả Kho Mẫu (Cấp 1)</option>
                 <option value="san-pham.html">Tất cả Sản phẩm</option>
                 <option value="bai-viet.html">Tất cả Bài viết</option>
                 <option value="gioi-thieu.html">Giới thiệu</option>
                 <option value="lien-he.html">Liên hệ</option>
             </optgroup>
-            <optgroup label="KHO MẪU (GOOGLE DRIVE)" style="background:#0f172a; color: #f472b6;">
-                ${galleryOptions}
+            
+            <optgroup label="DANH MỤC KHO MẪU (CẤP 2 & 3)" style="background:#0f172a; color: #a78bfa;">
+                <option value="kho-mau.html?cat=thiep">📁 Cấp 2: Các loại Thiệp</option>
+                <option value="kho-mau.html?cat=name-card">📁 Cấp 2: Name Card</option>
+                <option value="kho-mau.html?cat=folder">📁 Cấp 2: Folder</option>
+                <option value="kho-mau.html?sub=thiep-cuoi">↳ Cấp 3: Thiệp cưới</option>
+                <option value="kho-mau.html?sub=thiep-sinh-nhat">↳ Cấp 3: Thiệp sinh nhật</option>
+                <option value="kho-mau.html?sub=thiep-tan-gia">↳ Cấp 3: Thiệp tân gia</option>
             </optgroup>
+
+            <optgroup label="CHI TIẾT TỪNG KHO MẪU" style="background:#0f172a; color: #f472b6;">
+                ${galleryDetailOptions}
+            </optgroup>
+
             <optgroup label="DANH MỤC SẢN PHẨM" style="background:#0f172a; color: #4ade80;">
                 ${prodCatOptions}
             </optgroup>
@@ -159,7 +149,6 @@ function getMenuFormHTML(defaultLabel = '', defaultUrl = '') {
     `;
 }
 
-// 4. Thêm Node mới
 async function addNode(parentId) {
     const { value: formValues } = await Swal.fire({
         title: parentId ? 'Thêm Menu Con' : 'Thêm Menu Cấp 1',
@@ -195,7 +184,6 @@ async function addNode(parentId) {
     }
 }
 
-// 5. Sửa Node
 async function editNode(id) {
     const found = findNodeAndParent(menuData, id);
     if (!found) return;
@@ -220,7 +208,6 @@ async function editNode(id) {
     }
 }
 
-// 6. Xóa Node
 async function deleteNode(id) {
     const result = await showConfirm("Xóa Menu?", "Sếp chắc chắn muốn xóa menu này (sẽ xóa luôn các menu con của nó)?");
     if (!result.isConfirmed) return;
@@ -232,7 +219,6 @@ async function deleteNode(id) {
     }
 }
 
-// 7. Đẩy lên Supabase lưu trữ
 async function saveMenuToDatabase() {
     const btn = document.querySelector('.btn-submit');
     btn.innerText = "ĐANG LƯU DỮ LIỆU...";
